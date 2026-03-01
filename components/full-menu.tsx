@@ -198,7 +198,7 @@ export function FullMenu() {
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <h3 className="mb-0.5 text-sm font-bold text-foreground uppercase tracking-wide truncate">
+                <h3 className="mb-0.5 text-sm font-bold text-foreground uppercase tracking-wide">
                   {item.name}
                 </h3>
                 <div className="mb-1 flex items-center gap-0.5">
