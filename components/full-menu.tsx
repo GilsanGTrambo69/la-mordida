@@ -216,7 +216,7 @@ export function FullMenu() {
                     />
                   ))}
                 </div>
-                <p className="mb-2 text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                <p className="mb-2 text-xs text-muted-foreground leading-relaxed">
                   {item.description}
                 </p>
                 <div className="flex items-center justify-between">
