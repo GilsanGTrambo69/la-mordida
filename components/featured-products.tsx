@@ -147,7 +147,7 @@ export function FeaturedProducts() {
                     {product.price}
                   </span>
                   <a
-                    href={`https://wa.me/573001234567?text=Hola!%20Quiero%20pedir%20${encodeURIComponent(product.name)}`}
+                    href={`https://wa.me/573212750685?text=Hola!%20Quiero%20pedir%20${encodeURIComponent(product.name)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide transition-all hover:bg-primary/90 hover:scale-105"
