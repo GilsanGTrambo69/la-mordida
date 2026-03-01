@@ -61,7 +61,7 @@ export function Navbar() {
             Fusagasuga
           </span>
           <a
-            href="https://wa.me/573001234567?text=Hola!%20Quiero%20hacer%20un%20pedido"
+            href="https://wa.me/573212750685?text=Hola!%20Quiero%20hacer%20un%20pedido"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground uppercase tracking-wide transition-all hover:bg-primary/90 hover:scale-105"
@@ -97,7 +97,7 @@ export function Navbar() {
             ))}
             <li className="mt-2">
               <a
-                href="https://wa.me/573001234567?text=Hola!%20Quiero%20hacer%20un%20pedido"
+                href="https://wa.me/573212750685?text=Hola!%20Quiero%20hacer%20un%20pedido"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileOpen(false)}

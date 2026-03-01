@@ -99,7 +99,7 @@ export function LocationContact() {
                   WhatsApp
                 </h3>
                 <a
-                  href="https://wa.me/573001234567"
+                  href="https://wa.me/573212750685?text=Hola!%20Quiero%20hacer%20un%20pedido"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-secondary hover:underline"

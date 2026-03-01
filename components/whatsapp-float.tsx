@@ -38,7 +38,7 @@ export function WhatsAppFloat() {
 
       {/* Button */}
       <a
-        href="https://wa.me/573001234567?text=Hola!%20Quiero%20hacer%20un%20pedido"
+        href="https://wa.me/573212750685?text=Hola!%20Quiero%20hacer%20un%20pedido"
         target="_blank"
         rel="noopener noreferrer"
         className="flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-foreground shadow-lg transition-all hover:scale-110 hover:shadow-xl animate-pulse-glow"

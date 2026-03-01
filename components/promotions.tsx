@@ -146,7 +146,7 @@ export function Promotions() {
 
             <div className="flex flex-col gap-3">
               <a
-                href="https://wa.me/573001234567?text=Hola!%20Quiero%20aprovechar%20la%20promo%202x1"
+                href="https://wa.me/573212750685?text=Hola!%20Quiero%20aprovechar%20la%20promo%202x1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-xl bg-secondary px-8 py-4 text-base font-bold text-secondary-foreground uppercase tracking-wide transition-all hover:bg-secondary/90 hover:scale-105"

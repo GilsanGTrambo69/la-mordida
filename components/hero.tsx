@@ -96,7 +96,7 @@ export function Hero() {
           style={{ animationDelay: "0.7s" }}
         >
           <a
-            href="https://wa.me/573001234567?text=Hola!%20Quiero%20hacer%20un%20pedido"
+            href="https://wa.me/573212750685?text=Hola!%20Quiero%20hacer%20un%20pedido"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 text-base font-bold text-primary-foreground uppercase tracking-wide transition-all hover:bg-primary/90 hover:scale-105 animate-pulse-glow"

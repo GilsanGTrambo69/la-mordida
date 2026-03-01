@@ -217,7 +217,7 @@ export function FullMenu() {
                     {item.price}
                   </span>
                   <a
-                    href={`https://wa.me/573001234567?text=Hola!%20Quiero%20pedir%20${encodeURIComponent(item.name)}`}
+                    href={`https://wa.me/573212750685?text=Hola!%20Quiero%20pedir%20${encodeURIComponent(item.name)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="rounded-md bg-primary px-3 py-1 text-[10px] font-bold text-primary-foreground uppercase transition-all hover:bg-primary/90"
