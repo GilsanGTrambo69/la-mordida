@@ -2,15 +2,28 @@
 
 import { useEffect, useRef } from "react"
 import Image from "next/image"
-import { Flame, Star } from "lucide-react"
+import { Flame, Star, ShoppingCart } from "lucide-react"
+import { useCart, type ProductForModal } from "@/components/cart-context"
 
-const products = [
+interface FeaturedProduct {
+  name: string
+  description: string
+  price: string
+  image: string
+  badge: string
+  ingredients: string[]
+  proteins: string[]
+}
+
+const products: FeaturedProduct[] = [
   {
     name: "Hamburguesa Clásica + Papas",
     description: "Pan brioche artesanal, 150g de carne artesanal, salsa de la casa, cabello de ángel, tocineta, 50g de queso doble crema, tomate y papas.",
     price: "$20.000",
     image: "/images/burger-classic.jpg",
     badge: "Mas vendida",
+    ingredients: ["Salsa de la casa", "Cabello de angel", "Tocineta", "Queso doble crema", "Tomate"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Smash Carne y Panceta + Papas",
@@ -18,6 +31,8 @@ const products = [
     price: "$28.000",
     image: "/images/burger-bbq.jpg",
     badge: "Favorita",
+    ingredients: ["Lechuga", "Queso doble crema", "Crema", "Panceta", "Tomate", "Tocineta", "Salsas de la casa"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Perro Personal",
@@ -25,6 +40,8 @@ const products = [
     price: "$16.000",
     image: "/images/hot-dog.jpg",
     badge: "Popular",
+    ingredients: ["Cabello de angel", "Pico de gallo", "Queso fundido"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Salchipapa Clasica Personal",
@@ -32,6 +49,8 @@ const products = [
     price: "$37.000",
     image: "/images/salchipapa.jpg",
     badge: "Brutal",
+    ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Queso cheddar"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Papa Chip",
@@ -39,11 +58,26 @@ const products = [
     price: "$25.000",
     image: "/images/combo-meal.jpg",
     badge: "Recomendado",
+    ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Pico de gallo", "Queso cheddar"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
 ]
 
 export function FeaturedProducts() {
   const sectionRef = useRef<HTMLElement>(null)
+  const { setSelectedProduct } = useCart()
+
+  function handleProductClick(product: FeaturedProduct) {
+    const p: ProductForModal = {
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      image: product.image,
+      ingredients: product.ingredients,
+      proteins: product.proteins,
+    }
+    setSelectedProduct(p)
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -106,7 +140,11 @@ export function FeaturedProducts() {
             <div
               key={product.name}
               data-animate
-              className="group relative overflow-hidden rounded-2xl bg-card border border-border transition-all duration-300 hover:border-primary/40 hover:shadow-[0_0_30px_rgba(198,40,40,0.15)] opacity-0"
+              onClick={() => handleProductClick(product)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleProductClick(product) }}
+              className="group relative cursor-pointer overflow-hidden rounded-2xl bg-card border border-border transition-all duration-300 hover:border-primary/40 hover:shadow-[0_0_30px_rgba(198,40,40,0.15)] opacity-0"
               style={{ animationDelay: `${0.2 + i * 0.1}s` }}
             >
               {/* Image */}
@@ -146,14 +184,12 @@ export function FeaturedProducts() {
                   <span className="text-2xl font-bold text-secondary">
                     {product.price}
                   </span>
-                  <a
-                    href={`https://wa.me/573212750685?text=Hola!%20Quiero%20pedir%20${encodeURIComponent(product.name)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide transition-all hover:bg-primary/90 hover:scale-105"
+                  <span
+                    className="flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground uppercase tracking-wide transition-all hover:bg-primary/90 hover:scale-105"
                   >
-                    Pedir
-                  </a>
+                    <ShoppingCart className="h-3.5 w-3.5" />
+                    Agregar
+                  </span>
                 </div>
               </div>
             </div>
