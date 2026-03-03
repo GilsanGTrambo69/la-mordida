@@ -59,9 +59,8 @@ function CountdownTimer({ targetDate }: { targetDate: Date }) {
 export function Promotions() {
   const sectionRef = useRef<HTMLElement>(null)
 
-  // Set promo deadline to 3 days from now
-  const promoDeadline = new Date()
-  promoDeadline.setDate(promoDeadline.getDate() + 3)
+  // Set promo deadline 
+  const promoDeadline = new Date("2026-03-15T23:59:59")
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -102,7 +101,7 @@ export function Promotions() {
             className="font-serif text-4xl tracking-wide text-foreground uppercase sm:text-5xl lg:text-6xl opacity-0"
             style={{ animationDelay: "0.2s" }}
           >
-            Promos que <span className="text-primary">queman</span>
+            Mes de la <span className="text-primary">Mujer</span>
           </h2>
         </div>
 
@@ -128,14 +127,16 @@ export function Promotions() {
           <div className="relative flex flex-col gap-8 p-8 lg:flex-row lg:items-center lg:justify-between lg:p-14">
             <div className="max-w-lg">
               <span className="mb-3 inline-block rounded-full bg-secondary px-4 py-1 text-xs font-bold text-secondary-foreground uppercase">
-                Solo esta semana
+                Solo hasta el 15 de marzo
               </span>
               <h3 className="mb-3 font-serif text-3xl tracking-wide text-foreground uppercase sm:text-4xl lg:text-5xl">
-                2x1 en Hamburguesas Clasicas
+                1 Perro  + 1 Papa Chip + 2 Jugos Hit a solo 45.000
               </h3>
               <p className="mb-6 text-base text-foreground/80 leading-relaxed">
-                Todos los martes y jueves. Trae a tu parce y disfruten juntos el
-                mejor sabor de Fusagasuga. Promocion valida solo en el local.
+                En el Mes de la Mujer celebramos su fuerza, alegría y sabor único con un combo
+                irresistible: 1 perro caliente lleno de sabor, papa chip crocante y 2 jugos Hit
+                para compartir y brindar por ellas. Una promoción especial para consentir,
+                celebrar y disfrutar en grande. Disponible solo en el local hasta el 15 de marzo.
               </p>
               <div className="mb-6 flex items-center gap-2 text-sm text-foreground/70">
                 <Clock className="h-4 w-4" />
@@ -146,7 +147,7 @@ export function Promotions() {
 
             <div className="flex flex-col gap-3">
               <a
-                href="https://wa.me/573212750685?text=Hola!%20Quiero%20aprovechar%20la%20promo%202x1"
+                href="https://wa.me/573212750685?text=Hola!%20Quiero%20aprovechar%20la%20promo%20del%20%20mes%20de%20la%20mujer"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-xl bg-secondary px-8 py-4 text-base font-bold text-secondary-foreground uppercase tracking-wide transition-all hover:bg-secondary/90 hover:scale-105"

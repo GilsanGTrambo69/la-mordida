@@ -25,7 +25,7 @@ function buildWhatsAppMessage(
   let msg = "Pedido:\n\n"
 
   for (const item of items) {
-    msg += `${item.quantity} ${item.name}\n`
+    msg += `${item.quantity}x ${item.name}\n`
     if (item.protein) {
       msg += `Proteina: ${item.protein}\n`
     }
@@ -41,7 +41,7 @@ function buildWhatsAppMessage(
 }
 
 export function CartModal() {
-  const { items, removeItem, clearCart, totalPrice, cartOpen, setCartOpen } = useCart()
+  const { items, removeItem, clearCart, totalItems, totalPrice, cartOpen, setCartOpen } = useCart()
 
   function handleWhatsApp() {
     const message = buildWhatsAppMessage(items, totalPrice)
@@ -57,9 +57,9 @@ export function CartModal() {
             Tu Pedido
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            {items.length === 0
+            {totalItems === 0
               ? "Tu carrito esta vacio"
-              : `${items.length} producto${items.length > 1 ? "s" : ""} en tu carrito`}
+              : `${totalItems} unidad${totalItems > 1 ? "es" : ""} en tu carrito`}
           </DialogDescription>
         </DialogHeader>
 
@@ -128,7 +128,7 @@ export function CartModal() {
 
                       <div className="mt-1.5 flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">
-                          Cant: {item.quantity}
+                          {item.quantity}x
                         </span>
                         <span className="text-sm font-bold text-secondary">
                           {formatPrice(item.price * item.quantity)}

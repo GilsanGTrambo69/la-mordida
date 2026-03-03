@@ -104,7 +104,7 @@ export function LocationContact() {
                   rel="noopener noreferrer"
                   className="text-sm text-secondary hover:underline"
                 >
-                  +57 300 123 4567
+                  +57 321 275 0685
                 </a>
               </div>
 
