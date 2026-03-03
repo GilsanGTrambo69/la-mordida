@@ -72,6 +72,7 @@ export function ProductModal() {
         </DialogHeader>
 
         {/* Imagen del producto */}
+        {/*
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg">
           <Image
             src={selectedProduct.image}
@@ -80,7 +81,7 @@ export function ProductModal() {
             className="object-cover"
             sizes="(max-width: 448px) 100vw, 448px"
           />
-        </div>
+        </div> */}
 
         {/* Precio */}
         <div className="text-center">
