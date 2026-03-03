@@ -17,6 +17,12 @@ export interface CartItem {
   quantity: number
 }
 
+export interface ProductUnit {
+  id: string
+  protein: string
+  removedIngredients: string[]
+}
+
 export interface ProductForModal {
   name: string
   description: string
@@ -29,6 +35,7 @@ export interface ProductForModal {
 interface CartContextType {
   items: CartItem[]
   addItem: (item: CartItem) => void
+  addConfiguredUnits: (units: ProductUnit[], baseProduct: { name: string; image: string; price: number }) => void
   removeItem: (id: string) => void
   clearCart: () => void
   totalItems: number
@@ -45,6 +52,11 @@ function parsePrice(priceStr: string): number {
   return parseInt(priceStr.replace(/[^0-9]/g, ""), 10) || 0
 }
 
+function unitConfigKey(unit: ProductUnit): string {
+  const sortedRemoved = [...unit.removedIngredients].sort().join(",")
+  return `${unit.protein}|${sortedRemoved}`
+}
+
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [selectedProduct, setSelectedProduct] = useState<ProductForModal | null>(null)
@@ -53,6 +65,42 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const addItem = useCallback((newItem: CartItem) => {
     setItems((prev) => [...prev, newItem])
   }, [])
+
+  const addConfiguredUnits = useCallback(
+    (units: ProductUnit[], baseProduct: { name: string; image: string; price: number }) => {
+      const grouped = new Map<string, { protein: string; removedIngredients: string[]; count: number }>()
+
+      for (const unit of units) {
+        const key = unitConfigKey(unit)
+        const existing = grouped.get(key)
+        if (existing) {
+          existing.count += 1
+        } else {
+          grouped.set(key, {
+            protein: unit.protein,
+            removedIngredients: [...unit.removedIngredients],
+            count: 1,
+          })
+        }
+      }
+
+      const newItems: CartItem[] = []
+      for (const [, group] of grouped) {
+        newItems.push({
+          id: `${baseProduct.name}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          name: baseProduct.name,
+          image: baseProduct.image,
+          price: baseProduct.price,
+          protein: group.protein,
+          removedIngredients: group.removedIngredients,
+          quantity: group.count,
+        })
+      }
+
+      setItems((prev) => [...prev, ...newItems])
+    },
+    []
+  )
 
   const removeItem = useCallback((id: string) => {
     setItems((prev) => prev.filter((item) => item.id !== id))
@@ -70,6 +118,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         items,
         addItem,
+        addConfiguredUnits,
         removeItem,
         clearCart,
         totalItems,
