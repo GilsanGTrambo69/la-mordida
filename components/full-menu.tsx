@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
-import { Star } from "lucide-react"
+import { Star, ShoppingCart } from "lucide-react"
+import { useCart, type ProductForModal } from "@/components/cart-context"
 
 type Category = "todos" | "hamburguesas" | "perros" | "salchipapas" | "combos" | "bebidas"
 
@@ -12,6 +13,8 @@ interface MenuItem {
   price: string
   image: string
   category: Category
+  ingredients: string[]
+  proteins: string[]
 }
 
 const categories: { key: Category; label: string }[] = [
@@ -30,13 +33,17 @@ const menuItems: MenuItem[] = [
     price: "$20.000",
     image: "/images/burger-classic.jpg",
     category: "hamburguesas",
+    ingredients: ["Salsa de la casa", "Cabello de angel", "Tocineta", "Queso doble crema", "Tomate"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Smash Carne y Panceta + Papas",
     description: "Pan brioche, lechuga, 150g de carne artesanal, 100g de queso doble crema, crema, 100g de panceta, tomate, tocineta, salsas de la casa y papas.",
     price: "$28.000",
     image: "/images/burger-bbq.jpg",
-    category: "hamburguesas", 
+    category: "hamburguesas",
+    ingredients: ["Lechuga", "Queso doble crema", "Crema", "Panceta", "Tomate", "Tocineta", "Salsas de la casa"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Perro Personal",
@@ -44,6 +51,8 @@ const menuItems: MenuItem[] = [
     price: "$16.000",
     image: "/images/hot-dog.jpg",
     category: "perros",
+    ingredients: ["Cabello de angel", "Pico de gallo", "Queso fundido"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Perro Jumbo (37cm)",
@@ -51,6 +60,8 @@ const menuItems: MenuItem[] = [
     price: "$40.000",
     image: "/images/hot-dog.jpg",
     category: "perros",
+    ingredients: ["Cabello de angel", "Pico de gallo", "Queso fundido"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Salchipapa Clasica Personal",
@@ -58,6 +69,8 @@ const menuItems: MenuItem[] = [
     price: "$21.000",
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
+    ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Queso fundido"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Salchipapa Clasica para Dos Personas",
@@ -65,6 +78,8 @@ const menuItems: MenuItem[] = [
     price: "$37.000",
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
+    ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Queso cheddar"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Salchicosteña Personal",
@@ -72,6 +87,8 @@ const menuItems: MenuItem[] = [
     price: "$21.000",
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
+    ingredients: ["Salsas de la casa", "Suero costeno", "Cabello de angel", "Lechuga", "Queso fundido", "Zanahoria"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Salchicosteña Personal para Dos Personas",
@@ -79,6 +96,8 @@ const menuItems: MenuItem[] = [
     price: "$37.000",
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
+    ingredients: ["Salsas de la casa", "Zanahoria", "Suero costeno", "Cabello de angel", "Lechuga", "Queso fundido"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Papa Chip",
@@ -86,6 +105,8 @@ const menuItems: MenuItem[] = [
     price: "$25.000",
     image: "/images/combo-meal.jpg",
     category: "salchipapas",
+    ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Pico de gallo", "Queso cheddar"],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Combo Bestia",
@@ -93,6 +114,8 @@ const menuItems: MenuItem[] = [
     price: "$38.900",
     image: "/images/combo-meal.jpg",
     category: "combos",
+    ingredients: [],
+    proteins: ["Carne", "Pollo", "Mixta"],
   },
   {
     name: "Gaseosa",
@@ -100,6 +123,8 @@ const menuItems: MenuItem[] = [
     price: "$4.500",
     image: "/images/drinks.jpg",
     category: "bebidas",
+    ingredients: [],
+    proteins: [],
   },
   {
     name: "Jugo Natural",
@@ -107,6 +132,8 @@ const menuItems: MenuItem[] = [
     price: "$6.500",
     image: "/images/drinks.jpg",
     category: "bebidas",
+    ingredients: [],
+    proteins: [],
   },
   {
     name: "Malteada",
@@ -114,12 +141,27 @@ const menuItems: MenuItem[] = [
     price: "$9.900",
     image: "/images/drinks.jpg",
     category: "bebidas",
+    ingredients: [],
+    proteins: [],
   },
 ]
 
 export function FullMenu() {
   const [activeCategory, setActiveCategory] = useState<Category>("todos")
   const sectionRef = useRef<HTMLElement>(null)
+  const { setSelectedProduct } = useCart()
+
+  function handleProductClick(item: MenuItem) {
+    const product: ProductForModal = {
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      image: item.image,
+      ingredients: item.ingredients,
+      proteins: item.proteins,
+    }
+    setSelectedProduct(product)
+  }
 
   const filteredItems =
     activeCategory === "todos"
@@ -183,7 +225,11 @@ export function FullMenu() {
           {filteredItems.map((item) => (
             <div
               key={item.name}
-              className="group flex items-start gap-4 rounded-xl bg-background border border-border p-4 transition-all duration-300 hover:border-primary/30"
+              onClick={() => handleProductClick(item)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleProductClick(item) }}
+              className="group flex cursor-pointer items-start gap-4 rounded-xl bg-background border border-border p-4 transition-all duration-300 hover:border-primary/30"
             >
               {/* Thumbnail */}
               <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg">
@@ -216,14 +262,12 @@ export function FullMenu() {
                   <span className="text-base font-bold text-secondary">
                     {item.price}
                   </span>
-                  <a
-                    href={`https://wa.me/573212750685?text=Hola!%20Quiero%20pedir%20${encodeURIComponent(item.name)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-md bg-primary px-3 py-1 text-[10px] font-bold text-primary-foreground uppercase transition-all hover:bg-primary/90"
+                  <span
+                    className="flex items-center gap-1 rounded-md bg-primary px-3 py-1 text-[10px] font-bold text-primary-foreground uppercase transition-all hover:bg-primary/90"
                   >
-                    Pedir
-                  </a>
+                    <ShoppingCart className="h-3 w-3" />
+                    Agregar
+                  </span>
                 </div>
               </div>
             </div>
