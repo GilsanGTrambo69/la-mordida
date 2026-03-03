@@ -136,7 +136,7 @@ export function LocationContact() {
             {/* Action buttons */}
             <div className="flex flex-col gap-3 sm:flex-row">
               <a
-                href="https://wa.me/573001234567?text=Hola!%20Quiero%20hacer%20un%20pedido"
+                href="https://wa.me/573212750685?text=Hola!%20Quiero%20hacer%20un%20pedido"
                 target="_blank"
                 rel="noopener noreferrer"
                 data-animate
@@ -173,7 +173,7 @@ export function LocationContact() {
                 const phone = (form.elements.namedItem("phone") as HTMLInputElement).value
                 const message = (form.elements.namedItem("message") as HTMLTextAreaElement).value
                 window.open(
-                  `https://wa.me/573001234567?text=${encodeURIComponent(`Hola! Soy ${name} (${phone}). ${message}`)}`,
+                  `https://wa.me/573212750685?text=${encodeURIComponent(`Hola! Soy ${name} (${phone}). ${message}`)}`,
                   "_blank"
                 )
               }}
