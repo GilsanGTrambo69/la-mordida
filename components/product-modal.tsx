@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, memo } from "react"
-import { Minus, Plus } from "lucide-react"
+import { Minus, Plus, Check } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,49 @@ import {
 } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useCart, parsePrice, type ProductUnit } from "@/components/cart-context"
+import { useCart, parsePrice, type ProductUnit, type Addition } from "@/components/cart-context"
+
+// ---------- Constants ----------
+
+const ADDITION_PRICE = 6000
+
+const ADDITIONS_LIST = [
+  "Carne desmechada",
+  "Panceta al barril",
+  "Pollo desmechado",
+  "Cerdo desmechado",
+  "Costilla ahumada",
+]
+
+const VEGETABLE_OPTIONS = [
+  "Pico de gallo",
+  "Hogao colombiano",
+  "Lechuga",
+]
+
+const SAUCE_OPTIONS = [
+  "Salsa rosada",
+  "Salsa BBQ",
+  "Salsa de ajo",
+  "Mayonesa",
+]
+
+// Products that require vegetable and sauce selection
+const PRODUCTS_WITH_SELECTIONS = [
+  "Salchipapa",
+  "Perro",
+]
+
+function requiresSelections(productName: string): { vegetable: boolean; sauce: boolean } {
+  const nameLower = productName.toLowerCase()
+  const isPerro = nameLower.includes("perro")
+  const isSalchipapa = nameLower.includes("salchipapa") || nameLower.includes("salchicosteña") || nameLower.includes("papa chip")
+  
+  return {
+    vegetable: isPerro || isSalchipapa,
+    sauce: isPerro,
+  }
+}
 
 // ---------- UnitConfigurator (memoized) ----------
 
@@ -20,8 +62,13 @@ interface UnitConfiguratorProps {
   unit: ProductUnit
   ingredients: string[]
   proteins: string[]
+  requiresVegetable: boolean
+  requiresSauce: boolean
   onProteinChange: (index: number, protein: string) => void
   onIngredientToggle: (index: number, ingredient: string, checked: boolean) => void
+  onAdditionToggle: (index: number, additionName: string, checked: boolean) => void
+  onVegetableChange: (index: number, vegetable: string) => void
+  onSauceChange: (index: number, sauce: string) => void
 }
 
 const UnitConfigurator = memo(function UnitConfigurator({
@@ -29,8 +76,13 @@ const UnitConfigurator = memo(function UnitConfigurator({
   unit,
   ingredients,
   proteins,
+  requiresVegetable,
+  requiresSauce,
   onProteinChange,
   onIngredientToggle,
+  onAdditionToggle,
+  onVegetableChange,
+  onSauceChange,
 }: UnitConfiguratorProps) {
   return (
     <div className="rounded-xl border border-border bg-background p-4">
@@ -42,7 +94,7 @@ const UnitConfigurator = memo(function UnitConfigurator({
       {proteins.length > 0 && (
         <div className="mb-4">
           <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Proteina
+            Proteina <span className="text-destructive">*</span>
           </p>
           <RadioGroup
             value={unit.protein}
@@ -66,9 +118,65 @@ const UnitConfigurator = memo(function UnitConfigurator({
         </div>
       )}
 
+      {/* Vegetable Selection */}
+      {requiresVegetable && (
+        <div className="mb-4">
+          <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Vegetal <span className="text-destructive">*</span>
+          </p>
+          <RadioGroup
+            value={unit.selectedVegetable || ""}
+            onValueChange={(val) => onVegetableChange(index, val)}
+            className="gap-2"
+          >
+            {VEGETABLE_OPTIONS.map((veg) => (
+              <label
+                key={veg}
+                className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                  unit.selectedVegetable === veg
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-card hover:border-primary/30"
+                }`}
+              >
+                <RadioGroupItem value={veg} />
+                <span className="text-sm text-foreground">{veg}</span>
+              </label>
+            ))}
+          </RadioGroup>
+        </div>
+      )}
+
+      {/* Sauce Selection */}
+      {requiresSauce && (
+        <div className="mb-4">
+          <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Salsa <span className="text-destructive">*</span>
+          </p>
+          <RadioGroup
+            value={unit.selectedSauce || ""}
+            onValueChange={(val) => onSauceChange(index, val)}
+            className="gap-2"
+          >
+            {SAUCE_OPTIONS.map((sauce) => (
+              <label
+                key={sauce}
+                className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                  unit.selectedSauce === sauce
+                    ? "border-primary bg-primary/10"
+                    : "border-border bg-card hover:border-primary/30"
+                }`}
+              >
+                <RadioGroupItem value={sauce} />
+                <span className="text-sm text-foreground">{sauce}</span>
+              </label>
+            ))}
+          </RadioGroup>
+        </div>
+      )}
+
       {/* Ingredientes */}
       {ingredients.length > 0 && (
-        <div>
+        <div className="mb-4">
           <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Ingredientes
           </p>
@@ -105,6 +213,44 @@ const UnitConfigurator = memo(function UnitConfigurator({
           </div>
         </div>
       )}
+
+      {/* Adiciones */}
+      <div>
+        <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          Adiciones <span className="text-secondary">(+$6.000 c/u)</span>
+        </p>
+        <div className="space-y-2">
+          {ADDITIONS_LIST.map((addition) => {
+            const isSelected = unit.additions.some(a => a.name === addition)
+            return (
+              <button
+                type="button"
+                key={addition}
+                onClick={() => onAdditionToggle(index, addition, !isSelected)}
+                className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2.5 transition-colors ${
+                  isSelected
+                    ? "border-secondary bg-secondary/10"
+                    : "border-border bg-card hover:border-secondary/30"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
+                      isSelected
+                        ? "border-secondary bg-secondary text-secondary-foreground"
+                        : "border-muted-foreground"
+                    }`}
+                  >
+                    {isSelected && <Check className="h-3 w-3" />}
+                  </div>
+                  <span className="text-sm text-foreground">{addition}</span>
+                </div>
+                <span className="text-xs font-semibold text-secondary">+$6.000</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 })
@@ -116,6 +262,9 @@ function createUnit(protein: string): ProductUnit {
     id: Math.random().toString(36).slice(2, 9),
     protein,
     removedIngredients: [],
+    additions: [],
+    selectedVegetable: undefined,
+    selectedSauce: undefined,
   }
 }
 
@@ -177,12 +326,54 @@ export function ProductModal() {
     []
   )
 
+  const handleAdditionToggle = useCallback(
+    (index: number, additionName: string, checked: boolean) => {
+      setUnits((prev) =>
+        prev.map((u, i) => {
+          if (i !== index) return u
+          const additions = checked
+            ? [...u.additions, { name: additionName, price: ADDITION_PRICE }]
+            : u.additions.filter((a) => a.name !== additionName)
+          return { ...u, additions }
+        })
+      )
+    },
+    []
+  )
+
+  const handleVegetableChange = useCallback((index: number, vegetable: string) => {
+    setUnits((prev) =>
+      prev.map((u, i) => (i === index ? { ...u, selectedVegetable: vegetable } : u))
+    )
+  }, [])
+
+  const handleSauceChange = useCallback((index: number, sauce: string) => {
+    setUnits((prev) =>
+      prev.map((u, i) => (i === index ? { ...u, selectedSauce: sauce } : u))
+    )
+  }, [])
+
   if (!selectedProduct) return null
 
   const priceNum = parsePrice(selectedProduct.price)
-  const totalPrice = priceNum * quantity
+  const selections = requiresSelections(selectedProduct.name)
+  
+  // Calculate total with additions
+  const totalAdditions = units.reduce((sum, unit) => {
+    return sum + unit.additions.reduce((s, a) => s + a.price, 0)
+  }, 0)
+  const totalPrice = (priceNum * quantity) + totalAdditions
+
+  // Validation
+  const isValid = units.every((unit) => {
+    const hasProtein = selectedProduct.proteins.length === 0 || unit.protein
+    const hasVegetable = !selections.vegetable || unit.selectedVegetable
+    const hasSauce = !selections.sauce || unit.selectedSauce
+    return hasProtein && hasVegetable && hasSauce
+  })
 
   function handleAddToCart() {
+    if (!isValid) return
     addConfiguredUnits(units, {
       name: selectedProduct!.name,
       image: selectedProduct!.image,
@@ -250,16 +441,29 @@ export function ProductModal() {
               unit={unit}
               ingredients={selectedProduct.ingredients}
               proteins={selectedProduct.proteins}
+              requiresVegetable={selections.vegetable}
+              requiresSauce={selections.sauce}
               onProteinChange={handleProteinChange}
               onIngredientToggle={handleIngredientToggle}
+              onAdditionToggle={handleAdditionToggle}
+              onVegetableChange={handleVegetableChange}
+              onSauceChange={handleSauceChange}
             />
           ))}
         </div>
 
+        {/* Validation message */}
+        {!isValid && (
+          <p className="text-center text-sm text-destructive">
+            Por favor selecciona todas las opciones requeridas marcadas con *
+          </p>
+        )}
+
         {/* Boton agregar al carrito */}
         <button
           onClick={handleAddToCart}
-          className="w-full rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground uppercase tracking-wide transition-all hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98]"
+          disabled={!isValid}
+          className="w-full rounded-lg bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground uppercase tracking-wide transition-all hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           Agregar al carrito - {formatPrice(totalPrice)}
         </button>
