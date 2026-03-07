@@ -54,7 +54,7 @@ const products: FeaturedProduct[] = [
     image: "/images/salchipapa.jpg",
     badge: "Brutal",
     ingredients: ["Papas", "Salsa de la casa", "Salchicha", "Cabello de angel", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: ["Carne", "Pollo"],
     category: "salchipapas",
   },
   {
@@ -64,7 +64,7 @@ const products: FeaturedProduct[] = [
     image: "/images/Papas-chip.jpeg",
     badge: "Recomendado",
     ingredients: ["Papas", "Salsas de la casa", "Salchicha", "Lechuga", "Cabello de angel", "Queso cheddar"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: ["Carne", "Pollo"],
     category: "salchipapas",
   },
 ]

@@ -99,7 +99,7 @@ const menuItems: MenuItem[] = [
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
     ingredients: ["Papas", "Salsa de la casa", "Salchicha", "Cabello de angel", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: ["Carne", "Pollo"],
   },
   {
     name: "Salchipapa Clasica para Dos Personas",
@@ -108,7 +108,7 @@ const menuItems: MenuItem[] = [
     image: "/images/Salchipapa-clasica-duo.jpeg",
     category: "salchipapas",
     ingredients: ["Papas", "Salsa de la casa", "Salchicha", "Cabello de angel", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: ["Carne", "Pollo"],
   },
   {
     name: "Salchicosteña Personal",
@@ -117,7 +117,7 @@ const menuItems: MenuItem[] = [
     image: "/images/Salchicosteña-personal.jpeg",
     category: "salchipapas",
     ingredients: ["Papas", "Salsas de la casa", "Salchicha", "Suero costeno", "Cabello de angel", "Lechuga", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: ["Carne", "Pollo"],
   },
   {
     name: "Salchicosteña para Dos Personas",
@@ -126,7 +126,7 @@ const menuItems: MenuItem[] = [
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
     ingredients: ["Papas", "Salsas de la casa", "Salchicha", "Suero costeno", "Cabello de angel", "Lechuga", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: ["Carne", "Pollo"],
   },
   {
     name: "Papa Chip",
@@ -135,7 +135,7 @@ const menuItems: MenuItem[] = [
     image: "/images/Papas-chip.jpeg",
     category: "salchipapas",
     ingredients: ["Papas", "Salsas de la casa", "Salchicha", "Lechuga", "Cabello de angel", "Queso cheddar"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: ["Carne", "Pollo"],
   },
   {
     name: "Panceta de Cerdo al barril con Yuca",
