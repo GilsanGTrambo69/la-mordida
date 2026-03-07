@@ -296,9 +296,9 @@ export function FullMenu() {
 
         {/* Menu grid */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredItems.map((item) => (
+          {filteredItems.map((item, index) => (
             <div
-              key={item.name}
+              key={`${item.name}-${index}`}
               onClick={() => handleProductClick(item)}
               role="button"
               tabIndex={0}
