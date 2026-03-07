@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
-import { useCart } from "@/components/cart-context"
+import { useCart, type CartItem } from "@/components/cart-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 const WHATSAPP_NUMBER = "573212750685"
@@ -19,19 +19,39 @@ function formatPrice(value: number): string {
 }
 
 function buildWhatsAppMessage(
-  items: { name: string; protein: string; removedIngredients: string[]; quantity: number; price: number }[],
+  items: CartItem[],
   total: number
 ): string {
   let msg = "Pedido:\n\n"
 
   for (const item of items) {
     msg += `${item.quantity}x ${item.name}\n`
-    if (item.protein) {
+    
+    // Selecciones (proteina, vegetal, salsa)
+    if (item.selecciones) {
+      if (item.selecciones.proteina) {
+        msg += `Proteina: ${item.selecciones.proteina}\n`
+      }
+      if (item.selecciones.vegetal) {
+        msg += `Vegetal: ${item.selecciones.vegetal}\n`
+      }
+      if (item.selecciones.salsa) {
+        msg += `Salsa: ${item.selecciones.salsa}\n`
+      }
+    } else if (item.protein) {
       msg += `Proteina: ${item.protein}\n`
     }
+    
+    // Ingredientes removidos
     if (item.removedIngredients.length > 0) {
       msg += item.removedIngredients.map((i) => `Sin ${i.toLowerCase()}`).join("\n") + "\n"
     }
+    
+    // Adiciones
+    if (item.adiciones && item.adiciones.length > 0) {
+      msg += `Adiciones: ${item.adiciones.join(", ")}\n`
+    }
+    
     msg += "\n"
   }
 
@@ -107,12 +127,35 @@ export function CartModal() {
                         </button>
                       </div>
 
-                      {item.protein && (
+                      {/* Selecciones */}
+                      {item.selecciones && (
+                        <div className="mt-0.5 space-y-0.5">
+                          {item.selecciones.proteina && (
+                            <p className="text-xs text-muted-foreground">
+                              Proteina: <span className="text-foreground">{item.selecciones.proteina}</span>
+                            </p>
+                          )}
+                          {item.selecciones.vegetal && (
+                            <p className="text-xs text-muted-foreground">
+                              Vegetal: <span className="text-foreground">{item.selecciones.vegetal}</span>
+                            </p>
+                          )}
+                          {item.selecciones.salsa && (
+                            <p className="text-xs text-muted-foreground">
+                              Salsa: <span className="text-foreground">{item.selecciones.salsa}</span>
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Proteina tradicional */}
+                      {!item.selecciones && item.protein && (
                         <p className="text-xs text-muted-foreground">
                           Proteina: <span className="text-foreground">{item.protein}</span>
                         </p>
                       )}
 
+                      {/* Ingredientes removidos */}
                       {item.removedIngredients.length > 0 && (
                         <div className="mt-0.5 flex flex-wrap gap-1">
                           {item.removedIngredients.map((ing) => (
@@ -121,6 +164,20 @@ export function CartModal() {
                               className="rounded-md bg-destructive/10 px-1.5 py-0.5 text-[10px] font-medium text-destructive"
                             >
                               Sin {ing.toLowerCase()}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Adiciones */}
+                      {item.adiciones && item.adiciones.length > 0 && (
+                        <div className="mt-1 flex flex-wrap gap-1">
+                          {item.adiciones.map((adicion) => (
+                            <span
+                              key={adicion}
+                              className="rounded-md bg-secondary/10 px-1.5 py-0.5 text-[10px] font-medium text-secondary"
+                            >
+                              + {adicion}
                             </span>
                           ))}
                         </div>

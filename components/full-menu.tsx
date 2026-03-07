@@ -15,6 +15,8 @@ interface MenuItem {
   category: Category
   ingredients: string[]
   proteins: string[]
+  requiresSelections?: boolean
+  selectionsType?: "salchipapa" | "perro"
 }
 
 const categories: { key: Category; label: string }[] = [
@@ -52,7 +54,9 @@ const menuItems: MenuItem[] = [
     image: "/images/hot-dog.jpg",
     category: "perros",
     ingredients: ["Cabello de angel", "Pico de gallo", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: [],
+    requiresSelections: true,
+    selectionsType: "perro",
   },
   {
     name: "Perro Jumbo (37cm)",
@@ -61,7 +65,9 @@ const menuItems: MenuItem[] = [
     image: "/images/hot-dog.jpg",
     category: "perros",
     ingredients: ["Cabello de angel", "Pico de gallo", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: [],
+    requiresSelections: true,
+    selectionsType: "perro",
   },
   {
     name: "Salchipapa Clasica Personal",
@@ -70,7 +76,9 @@ const menuItems: MenuItem[] = [
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
     ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: [],
+    requiresSelections: true,
+    selectionsType: "salchipapa",
   },
   {
     name: "Salchipapa Clasica para Dos Personas",
@@ -79,7 +87,9 @@ const menuItems: MenuItem[] = [
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
     ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Queso cheddar"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: [],
+    requiresSelections: true,
+    selectionsType: "salchipapa",
   },
   {
     name: "Salchicosteña Personal",
@@ -88,7 +98,9 @@ const menuItems: MenuItem[] = [
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
     ingredients: ["Salsas de la casa", "Suero costeno", "Cabello de angel", "Lechuga", "Queso fundido", "Zanahoria"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: [],
+    requiresSelections: true,
+    selectionsType: "salchipapa",
   },
   {
     name: "Salchicosteña Personal para Dos Personas",
@@ -97,7 +109,9 @@ const menuItems: MenuItem[] = [
     image: "/images/salchipapa.jpg",
     category: "salchipapas",
     ingredients: ["Salsas de la casa", "Zanahoria", "Suero costeno", "Cabello de angel", "Lechuga", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: [],
+    requiresSelections: true,
+    selectionsType: "salchipapa",
   },
   {
     name: "Papa Chip",
@@ -106,7 +120,9 @@ const menuItems: MenuItem[] = [
     image: "/images/combo-meal.jpg",
     category: "salchipapas",
     ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Pico de gallo", "Queso cheddar"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    proteins: [],
+    requiresSelections: true,
+    selectionsType: "salchipapa",
   },
   {
     name: "Combo Bestia",
@@ -159,6 +175,8 @@ export function FullMenu() {
       image: item.image,
       ingredients: item.ingredients,
       proteins: item.proteins,
+      requiresSelections: item.requiresSelections,
+      selectionsType: item.selectionsType,
     }
     setSelectedProduct(product)
   }

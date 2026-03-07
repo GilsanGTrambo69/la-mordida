@@ -7,6 +7,30 @@ export interface CartItemIngredient {
   removed: boolean
 }
 
+// Adiciones disponibles
+export const ADICIONES = [
+  "Carne desmechada",
+  "Panceta al barril",
+  "Pollo desmechado",
+  "Cerdo desmechado",
+  "Costilla ahumada",
+] as const
+
+export const ADICION_PRICE = 6000
+
+// Opciones de seleccion para productos especificos
+export const SELECCION_PROTEINAS = ["Carne", "Pollo", "Cerdo", "Chorizo"]
+export const SELECCION_VEGETALES = ["Lechuga", "Tomate", "Cebolla", "Pico de gallo"]
+export const SELECCION_SALSAS = ["Rosada", "BBQ", "De la casa", "Mayonesa", "Mostaza"]
+
+export type Adicion = typeof ADICIONES[number]
+
+export interface ProductSelections {
+  proteina?: string
+  vegetal?: string
+  salsa?: string
+}
+
 export interface CartItem {
   id: string
   name: string
@@ -14,6 +38,8 @@ export interface CartItem {
   price: number
   protein: string
   removedIngredients: string[]
+  adiciones: string[]
+  selecciones?: ProductSelections
   quantity: number
 }
 
@@ -21,6 +47,8 @@ export interface ProductUnit {
   id: string
   protein: string
   removedIngredients: string[]
+  adiciones: string[]
+  selecciones?: ProductSelections
 }
 
 export interface ProductForModal {
@@ -30,6 +58,8 @@ export interface ProductForModal {
   image: string
   ingredients: string[]
   proteins: string[]
+  requiresSelections?: boolean
+  selectionsType?: "salchipapa" | "perro"
 }
 
 interface CartContextType {
@@ -54,7 +84,11 @@ function parsePrice(priceStr: string): number {
 
 function unitConfigKey(unit: ProductUnit): string {
   const sortedRemoved = [...unit.removedIngredients].sort().join(",")
-  return `${unit.protein}|${sortedRemoved}`
+  const sortedAdiciones = [...unit.adiciones].sort().join(",")
+  const selectionsKey = unit.selecciones 
+    ? `${unit.selecciones.proteina || ""}-${unit.selecciones.vegetal || ""}-${unit.selecciones.salsa || ""}`
+    : ""
+  return `${unit.protein}|${sortedRemoved}|${sortedAdiciones}|${selectionsKey}`
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -68,7 +102,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addConfiguredUnits = useCallback(
     (units: ProductUnit[], baseProduct: { name: string; image: string; price: number }) => {
-      const grouped = new Map<string, { protein: string; removedIngredients: string[]; count: number }>()
+      const grouped = new Map<string, { 
+        protein: string
+        removedIngredients: string[]
+        adiciones: string[]
+        selecciones?: ProductSelections
+        count: number 
+      }>()
 
       for (const unit of units) {
         const key = unitConfigKey(unit)
@@ -79,6 +119,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
           grouped.set(key, {
             protein: unit.protein,
             removedIngredients: [...unit.removedIngredients],
+            adiciones: [...unit.adiciones],
+            selecciones: unit.selecciones,
             count: 1,
           })
         }
@@ -86,13 +128,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       const newItems: CartItem[] = []
       for (const [, group] of grouped) {
+        // Calcular precio con adiciones
+        const adicionesTotal = group.adiciones.length * ADICION_PRICE
+        const finalPrice = baseProduct.price + adicionesTotal
+
         newItems.push({
           id: `${baseProduct.name}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
           name: baseProduct.name,
           image: baseProduct.image,
-          price: baseProduct.price,
+          price: finalPrice,
           protein: group.protein,
           removedIngredients: group.removedIngredients,
+          adiciones: group.adiciones,
+          selecciones: group.selecciones,
           quantity: group.count,
         })
       }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, memo } from "react"
-import { Minus, Plus } from "lucide-react"
+import { Minus, Plus, AlertCircle } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,98 @@ import {
 } from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useCart, parsePrice, type ProductUnit } from "@/components/cart-context"
+import { 
+  useCart, 
+  parsePrice, 
+  type ProductUnit,
+  type ProductSelections,
+  ADICIONES,
+  ADICION_PRICE,
+  SELECCION_PROTEINAS,
+  SELECCION_VEGETALES,
+  SELECCION_SALSAS,
+} from "@/components/cart-context"
+
+// ---------- SelectionGroup (para proteina, vegetal, salsa) ----------
+
+interface SelectionGroupProps {
+  title: string
+  options: string[]
+  value: string | undefined
+  onChange: (value: string) => void
+  required?: boolean
+}
+
+function SelectionGroup({ title, options, value, onChange, required }: SelectionGroupProps) {
+  return (
+    <div className="mb-4">
+      <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-2">
+        {title}
+        {required && <span className="text-destructive">*</span>}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => onChange(option)}
+            className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+              value === option
+                ? "border-primary bg-primary/10 text-primary"
+                : "border-border bg-card text-foreground hover:border-primary/30"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ---------- AdicionesSelector ----------
+
+interface AdicionesSelectorProps {
+  selectedAdiciones: string[]
+  onToggle: (adicion: string) => void
+}
+
+function AdicionesSelector({ selectedAdiciones, onToggle }: AdicionesSelectorProps) {
+  return (
+    <div className="rounded-xl border border-border bg-background p-4">
+      <h4 className="mb-3 text-sm font-bold text-foreground uppercase tracking-wide flex items-center gap-2">
+        Adiciones
+        <span className="text-xs font-normal text-secondary normal-case">
+          (+${ADICION_PRICE.toLocaleString("es-CO")} c/u)
+        </span>
+      </h4>
+      <div className="space-y-2">
+        {ADICIONES.map((adicion) => {
+          const isSelected = selectedAdiciones.includes(adicion)
+          return (
+            <label
+              key={adicion}
+              className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                isSelected
+                  ? "border-secondary bg-secondary/10"
+                  : "border-border bg-card hover:border-secondary/30"
+              }`}
+            >
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={() => onToggle(adicion)}
+              />
+              <span className="flex-1 text-sm text-foreground">{adicion}</span>
+              <span className="text-xs text-secondary font-medium">
+                +${ADICION_PRICE.toLocaleString("es-CO")}
+              </span>
+            </label>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
 
 // ---------- UnitConfigurator (memoized) ----------
 
@@ -20,8 +111,12 @@ interface UnitConfiguratorProps {
   unit: ProductUnit
   ingredients: string[]
   proteins: string[]
+  requiresSelections?: boolean
+  selectionsType?: "salchipapa" | "perro"
   onProteinChange: (index: number, protein: string) => void
   onIngredientToggle: (index: number, ingredient: string, checked: boolean) => void
+  onAdicionToggle: (index: number, adicion: string) => void
+  onSelectionChange: (index: number, key: keyof ProductSelections, value: string) => void
 }
 
 const UnitConfigurator = memo(function UnitConfigurator({
@@ -29,8 +124,12 @@ const UnitConfigurator = memo(function UnitConfigurator({
   unit,
   ingredients,
   proteins,
+  requiresSelections,
+  selectionsType,
   onProteinChange,
   onIngredientToggle,
+  onAdicionToggle,
+  onSelectionChange,
 }: UnitConfiguratorProps) {
   return (
     <div className="rounded-xl border border-border bg-background p-4">
@@ -38,8 +137,43 @@ const UnitConfigurator = memo(function UnitConfigurator({
         Producto {index + 1}
       </h4>
 
-      {/* Proteina */}
-      {proteins.length > 0 && (
+      {/* Selecciones requeridas para Salchipapas y Perros */}
+      {requiresSelections && (
+        <div className="mb-4 rounded-lg bg-muted/50 p-3">
+          <p className="mb-3 text-xs font-semibold text-primary uppercase tracking-wide">
+            Selecciona tus opciones
+          </p>
+          
+          <SelectionGroup
+            title="Proteina"
+            options={SELECCION_PROTEINAS}
+            value={unit.selecciones?.proteina}
+            onChange={(val) => onSelectionChange(index, "proteina", val)}
+            required
+          />
+          
+          <SelectionGroup
+            title="Vegetal"
+            options={SELECCION_VEGETALES}
+            value={unit.selecciones?.vegetal}
+            onChange={(val) => onSelectionChange(index, "vegetal", val)}
+            required
+          />
+          
+          {selectionsType === "perro" && (
+            <SelectionGroup
+              title="Salsa"
+              options={SELECCION_SALSAS}
+              value={unit.selecciones?.salsa}
+              onChange={(val) => onSelectionChange(index, "salsa", val)}
+              required
+            />
+          )}
+        </div>
+      )}
+
+      {/* Proteina del producto (si no tiene selecciones requeridas) */}
+      {!requiresSelections && proteins.length > 0 && (
         <div className="mb-4">
           <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Proteina
@@ -68,7 +202,7 @@ const UnitConfigurator = memo(function UnitConfigurator({
 
       {/* Ingredientes */}
       {ingredients.length > 0 && (
-        <div>
+        <div className="mb-4">
           <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Ingredientes
           </p>
@@ -105,17 +239,25 @@ const UnitConfigurator = memo(function UnitConfigurator({
           </div>
         </div>
       )}
+
+      {/* Adiciones */}
+      <AdicionesSelector
+        selectedAdiciones={unit.adiciones}
+        onToggle={(adicion) => onAdicionToggle(index, adicion)}
+      />
     </div>
   )
 })
 
 // ---------- ProductModal ----------
 
-function createUnit(protein: string): ProductUnit {
+function createUnit(protein: string, requiresSelections?: boolean): ProductUnit {
   return {
     id: Math.random().toString(36).slice(2, 9),
     protein,
     removedIngredients: [],
+    adiciones: [],
+    selecciones: requiresSelections ? {} : undefined,
   }
 }
 
@@ -123,13 +265,15 @@ export function ProductModal() {
   const { selectedProduct, setSelectedProduct, addConfiguredUnits } = useCart()
   const [units, setUnits] = useState<ProductUnit[]>([])
   const [quantity, setQuantity] = useState(1)
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   // Reset al abrir un producto nuevo
   useEffect(() => {
     if (selectedProduct) {
       const defaultProtein = selectedProduct.proteins[0] || ""
-      setUnits([createUnit(defaultProtein)])
+      setUnits([createUnit(defaultProtein, selectedProduct.requiresSelections)])
       setQuantity(1)
+      setValidationError(null)
     }
   }, [selectedProduct])
 
@@ -143,7 +287,7 @@ export function ProductModal() {
         if (newQty > prev.length) {
           const defaultProtein = selectedProduct?.proteins[0] || ""
           const toAdd = Array.from({ length: newQty - prev.length }, () =>
-            createUnit(defaultProtein)
+            createUnit(defaultProtein, selectedProduct?.requiresSelections)
           )
           return [...prev, ...toAdd]
         }
@@ -177,12 +321,70 @@ export function ProductModal() {
     []
   )
 
+  const handleAdicionToggle = useCallback((index: number, adicion: string) => {
+    setUnits((prev) =>
+      prev.map((u, i) => {
+        if (i !== index) return u
+        const isSelected = u.adiciones.includes(adicion)
+        const newAdiciones = isSelected
+          ? u.adiciones.filter((a) => a !== adicion)
+          : [...u.adiciones, adicion]
+        return { ...u, adiciones: newAdiciones }
+      })
+    )
+  }, [])
+
+  const handleSelectionChange = useCallback(
+    (index: number, key: keyof ProductSelections, value: string) => {
+      setUnits((prev) =>
+        prev.map((u, i) => {
+          if (i !== index) return u
+          return {
+            ...u,
+            selecciones: {
+              ...u.selecciones,
+              [key]: value,
+            },
+          }
+        })
+      )
+      setValidationError(null)
+    },
+    []
+  )
+
   if (!selectedProduct) return null
 
   const priceNum = parsePrice(selectedProduct.price)
-  const totalPrice = priceNum * quantity
+  
+  // Calcular precio total incluyendo adiciones
+  const totalAdiciones = units.reduce((acc, unit) => acc + unit.adiciones.length * ADICION_PRICE, 0)
+  const totalPrice = (priceNum * quantity) + totalAdiciones
+
+  function validateSelections(): boolean {
+    if (!selectedProduct?.requiresSelections) return true
+
+    for (let i = 0; i < units.length; i++) {
+      const unit = units[i]
+      if (!unit.selecciones?.proteina) {
+        setValidationError(`Por favor selecciona una proteina para el producto ${i + 1}`)
+        return false
+      }
+      if (!unit.selecciones?.vegetal) {
+        setValidationError(`Por favor selecciona un vegetal para el producto ${i + 1}`)
+        return false
+      }
+      if (selectedProduct.selectionsType === "perro" && !unit.selecciones?.salsa) {
+        setValidationError(`Por favor selecciona una salsa para el producto ${i + 1}`)
+        return false
+      }
+    }
+    return true
+  }
 
   function handleAddToCart() {
+    if (!validateSelections()) return
+
     addConfiguredUnits(units, {
       name: selectedProduct!.name,
       image: selectedProduct!.image,
@@ -250,11 +452,23 @@ export function ProductModal() {
               unit={unit}
               ingredients={selectedProduct.ingredients}
               proteins={selectedProduct.proteins}
+              requiresSelections={selectedProduct.requiresSelections}
+              selectionsType={selectedProduct.selectionsType}
               onProteinChange={handleProteinChange}
               onIngredientToggle={handleIngredientToggle}
+              onAdicionToggle={handleAdicionToggle}
+              onSelectionChange={handleSelectionChange}
             />
           ))}
         </div>
+
+        {/* Error de validacion */}
+        {validationError && (
+          <div className="flex items-center gap-2 rounded-lg bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            {validationError}
+          </div>
+        )}
 
         {/* Boton agregar al carrito */}
         <button
