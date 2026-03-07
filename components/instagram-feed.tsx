@@ -6,37 +6,37 @@ import { Instagram, Heart, MessageCircle } from "lucide-react"
 
 const posts = [
   {
-    image: "/images/burger-classic.jpg",
+    image: "/images/Hamburguesa-clasica-con-salchipapa.jpeg",
     likes: "342",
     comments: "28",
     alt: "Hamburguesa clasica La Mordida Fusa",
   },
   {
-    image: "/images/burger-bbq.jpg",
+    image: "/images/Hamburguesa-mordida-tropical.jpeg",
     likes: "489",
     comments: "45",
-    alt: "BBQ Bacon burger La Mordida Fusa",
+    alt: "Tropical Mordida burger La Mordida Fusa",
   },
   {
-    image: "/images/salchipapa.jpg",
+    image: "/images/salchicosteña-personal.jpeg",
     likes: "267",
     comments: "19",
-    alt: "Salchipapa monstruo La Mordida Fusa",
+    alt: "Salchicosteña La Mordida Fusa",
   },
   {
-    image: "/images/burger-special.jpg",
+    image: "/images/salchipapa-clasica-duo.jpeg",
     likes: "521",
     comments: "63",
     alt: "La Bestia Triple La Mordida Fusa",
   },
   {
-    image: "/images/hot-dog.jpg",
+    image: "/images/Perro-personal.jpeg",
     likes: "198",
     comments: "15",
     alt: "Perro loco La Mordida Fusa",
   },
   {
-    image: "/images/combo-meal.jpg",
+    image: "/images/Papas-chip.jpeg",
     likes: "376",
     comments: "32",
     alt: "Combo familiar La Mordida Fusa",

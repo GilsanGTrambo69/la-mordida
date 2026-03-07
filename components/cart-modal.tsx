@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
-import { useCart } from "@/components/cart-context"
+import { useCart, type CartItem } from "@/components/cart-context"
 import { ScrollArea } from "@/components/ui/scroll-area"
 
 const WHATSAPP_NUMBER = "573212750685"
@@ -19,7 +19,7 @@ function formatPrice(value: number): string {
 }
 
 function buildWhatsAppMessage(
-  items: { name: string; protein: string; removedIngredients: string[]; quantity: number; price: number }[],
+  items: CartItem[],
   total: number
 ): string {
   let msg = "Pedido:\n\n"
@@ -28,6 +28,15 @@ function buildWhatsAppMessage(
     msg += `${item.quantity}x ${item.name}\n`
     if (item.protein) {
       msg += `Proteina: ${item.protein}\n`
+    }
+    if (item.selectedVegetable) {
+      msg += `Vegetal: ${item.selectedVegetable}\n`
+    }
+    if (item.selectedSauce) {
+      msg += `Salsa: ${item.selectedSauce}\n`
+    }
+    if (item.additions && item.additions.length > 0) {
+      msg += `Adiciones: ${item.additions.map(a => a.name).join(", ")}\n`
     }
     if (item.removedIngredients.length > 0) {
       msg += item.removedIngredients.map((i) => `Sin ${i.toLowerCase()}`).join("\n") + "\n"
@@ -111,6 +120,31 @@ export function CartModal() {
                         <p className="text-xs text-muted-foreground">
                           Proteina: <span className="text-foreground">{item.protein}</span>
                         </p>
+                      )}
+
+                      {item.selectedVegetable && (
+                        <p className="text-xs text-muted-foreground">
+                          Vegetal: <span className="text-foreground">{item.selectedVegetable}</span>
+                        </p>
+                      )}
+
+                      {item.selectedSauce && (
+                        <p className="text-xs text-muted-foreground">
+                          Salsa: <span className="text-foreground">{item.selectedSauce}</span>
+                        </p>
+                      )}
+
+                      {item.additions && item.additions.length > 0 && (
+                        <div className="mt-0.5 flex flex-wrap gap-1">
+                          {item.additions.map((addition) => (
+                            <span
+                              key={addition.name}
+                              className="rounded-md bg-secondary/10 px-1.5 py-0.5 text-[10px] font-medium text-secondary"
+                            >
+                              + {addition.name}
+                            </span>
+                          ))}
+                        </div>
                       )}
 
                       {item.removedIngredients.length > 0 && (

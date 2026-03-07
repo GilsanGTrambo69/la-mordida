@@ -7,6 +7,11 @@ export interface CartItemIngredient {
   removed: boolean
 }
 
+export interface Addition {
+  name: string
+  price: number
+}
+
 export interface CartItem {
   id: string
   name: string
@@ -14,6 +19,9 @@ export interface CartItem {
   price: number
   protein: string
   removedIngredients: string[]
+  additions: Addition[]
+  selectedVegetable?: string
+  selectedSauce?: string
   quantity: number
 }
 
@@ -21,6 +29,9 @@ export interface ProductUnit {
   id: string
   protein: string
   removedIngredients: string[]
+  additions: Addition[]
+  selectedVegetable?: string
+  selectedSauce?: string
 }
 
 export interface ProductForModal {
@@ -30,6 +41,7 @@ export interface ProductForModal {
   image: string
   ingredients: string[]
   proteins: string[]
+  category?: string
 }
 
 interface CartContextType {
@@ -54,7 +66,8 @@ function parsePrice(priceStr: string): number {
 
 function unitConfigKey(unit: ProductUnit): string {
   const sortedRemoved = [...unit.removedIngredients].sort().join(",")
-  return `${unit.protein}|${sortedRemoved}`
+  const sortedAdditions = [...unit.additions].map(a => a.name).sort().join(",")
+  return `${unit.protein}|${sortedRemoved}|${sortedAdditions}|${unit.selectedVegetable || ""}|${unit.selectedSauce || ""}`
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -68,7 +81,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addConfiguredUnits = useCallback(
     (units: ProductUnit[], baseProduct: { name: string; image: string; price: number }) => {
-      const grouped = new Map<string, { protein: string; removedIngredients: string[]; count: number }>()
+      const grouped = new Map<string, { protein: string; removedIngredients: string[]; additions: Addition[]; selectedVegetable?: string; selectedSauce?: string; count: number }>()
 
       for (const unit of units) {
         const key = unitConfigKey(unit)
@@ -79,6 +92,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           grouped.set(key, {
             protein: unit.protein,
             removedIngredients: [...unit.removedIngredients],
+            additions: [...unit.additions],
+            selectedVegetable: unit.selectedVegetable,
+            selectedSauce: unit.selectedSauce,
             count: 1,
           })
         }
@@ -86,13 +102,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       const newItems: CartItem[] = []
       for (const [, group] of grouped) {
+        const additionsTotal = group.additions.reduce((sum, a) => sum + a.price, 0)
         newItems.push({
           id: `${baseProduct.name}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
           name: baseProduct.name,
           image: baseProduct.image,
-          price: baseProduct.price,
+          price: baseProduct.price + additionsTotal,
           protein: group.protein,
           removedIngredients: group.removedIngredients,
+          additions: group.additions,
+          selectedVegetable: group.selectedVegetable,
+          selectedSauce: group.selectedSauce,
           quantity: group.count,
         })
       }

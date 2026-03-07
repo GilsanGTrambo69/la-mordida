@@ -13,53 +13,59 @@ interface FeaturedProduct {
   badge: string
   ingredients: string[]
   proteins: string[]
+  category: string
 }
 
 const products: FeaturedProduct[] = [
   {
-    name: "Hamburguesa Clásica + Papas",
-    description: "Pan brioche artesanal, 150g de carne artesanal, salsa de la casa, cabello de ángel, tocineta, 50g de queso doble crema, tomate y papas.",
-    price: "$20.000",
-    image: "/images/burger-classic.jpg",
+    name: "Hamburguesa Clasíca + Papas",
+    description: "Pan brioche, lechuga, 150g de carne artesanal, 100g de queso doble crema, crema, 100g de panceta, tomate, tocineta, salsas de la casa y papas.",
+    price: "$33.000",
+    image: "/images/burger-bbq.jpg",
     badge: "Mas vendida",
-    ingredients: ["Salsa de la casa", "Cabello de angel", "Tocineta", "Queso doble crema", "Tomate"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    ingredients: ["Pan brioche", "Lechuga", "150g carne artesanal", "100g queso", "Tomate", "Tocineta al barril", "Salsa de ajo de la casa", "Papas"],
+    proteins: [],
+    category: "hamburguesas",
   },
   {
-    name: "Smash Carne y Panceta + Papas",
-    description: "Pan brioche, lechuga, 150g de carne artesanal, 100g de queso doble crema, crema, 100g de panceta, tomate, tocineta, salsas de la casa y papas.",
-    price: "$28.000",
-    image: "/images/burger-bbq.jpg",
+    name: "Smash Carne y Panceta + Salchipapas",
+    description: "Pan brioche, lechuga, 150g de carne artesanal, 100g de queso cheddar, crema, 100g de panceta, tomate, tocineta, salsas de la casa y salchipapas.",
+    price: "$33.000",
+    image: "/images/Hamburguesa-smash-con-panceta.jpeg",
     badge: "Favorita",
-    ingredients: ["Lechuga", "Queso doble crema", "Crema", "Panceta", "Tomate", "Tocineta", "Salsas de la casa"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    ingredients: ["Pan brioche", "Lechuga", "150g carne artesanal", "queso doble crema", "queso chedar", "100g panceta", "Tomate", "Tocineta al barril", "Salsa de ajo de la casa", "Salchipapa personal"],
+    proteins: [],
+    category: "hamburguesas",
   },
   {
     name: "Perro Personal",
-    description: "Pan brioche, chorizo o salchicha, cabello de ángel, pico de gallo, hogao colombiano o lechuga, 50g de proteína a elección, salsa a elección y queso fundido.",
-    price: "$16.000",
-    image: "/images/hot-dog.jpg",
+    description: "Pan brioche, cabello de ángel, salchicha o chorizo (a elección), pico de gallo, vegetal de elección, salsa a elección",
+    price: "$18.000",
+    image: "/images/Perro-personal.jpeg",
     badge: "Popular",
-    ingredients: ["Cabello de angel", "Pico de gallo", "Queso fundido"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    ingredients: ["pan brioche", "Cabello de angel"],
+    proteins: ["Chorizo", "Salchicha"],
+    category: "perros",
   },
   {
     name: "Salchipapa Clasica Personal",
-    description: "Papas, salsas de la casa, salchicha, lechuga, 200g de proteína a elección (máximo 2 proteínas), cabello de ángel y queso cheddar.",
-    price: "$37.000",
+    description: "Papas, salsas de la casa, salchicha, lechuga, Vegetal de elección, 100g de proteína a elección, cabello de ángel y queso cheddar.",
+    price: "$21.000",
     image: "/images/salchipapa.jpg",
     badge: "Brutal",
-    ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Queso cheddar"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    ingredients: ["Papas", "Salsa de la casa", "Salchicha", "Cabello de angel", "Queso fundido"],
+    proteins: ["Carne", "Pollo"],
+    category: "salchipapas",
   },
   {
     name: "Papa Chip",
     description: "Papas, salsas de la casa, salchicha, lechuga, 100g de proteína a elección, cabello de ángel, pico de gallo, hogao o chimichurri y queso cheddar.",
     price: "$25.000",
-    image: "/images/combo-meal.jpg",
+    image: "/images/Papas-chip.jpeg",
     badge: "Recomendado",
-    ingredients: ["Salsas de la casa", "Lechuga", "Cabello de angel", "Pico de gallo", "Queso cheddar"],
-    proteins: ["Carne", "Pollo", "Mixta"],
+    ingredients: ["Papas", "Salsas de la casa", "Salchicha", "Lechuga", "Cabello de angel", "Queso cheddar"],
+    proteins: ["Carne", "Pollo"],
+    category: "salchipapas",
   },
 ]
 
@@ -75,6 +81,7 @@ export function FeaturedProducts() {
       image: product.image,
       ingredients: product.ingredients,
       proteins: product.proteins,
+      category: product.category,
     }
     setSelectedProduct(p)
   }
