@@ -41,6 +41,7 @@ export interface ProductForModal {
   image: string
   ingredients: string[]
   proteins: string[]
+  category?: string
 }
 
 interface CartContextType {

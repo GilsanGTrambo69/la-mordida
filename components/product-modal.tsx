@@ -64,6 +64,7 @@ interface UnitConfiguratorProps {
   proteins: string[]
   requiresVegetable: boolean
   requiresSauce: boolean
+  showAdditions: boolean
   onProteinChange: (index: number, protein: string) => void
   onIngredientToggle: (index: number, ingredient: string, checked: boolean) => void
   onAdditionToggle: (index: number, additionName: string, checked: boolean) => void
@@ -78,6 +79,7 @@ const UnitConfigurator = memo(function UnitConfigurator({
   proteins,
   requiresVegetable,
   requiresSauce,
+  showAdditions,
   onProteinChange,
   onIngredientToggle,
   onAdditionToggle,
@@ -215,42 +217,44 @@ const UnitConfigurator = memo(function UnitConfigurator({
       )}
 
       {/* Adiciones */}
-      <div>
-        <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          Adiciones <span className="text-secondary">(+$6.000 c/u)</span>
-        </p>
-        <div className="space-y-2">
-          {ADDITIONS_LIST.map((addition) => {
-            const isSelected = unit.additions.some(a => a.name === addition)
-            return (
-              <button
-                type="button"
-                key={addition}
-                onClick={() => onAdditionToggle(index, addition, !isSelected)}
-                className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2.5 transition-colors ${
-                  isSelected
-                    ? "border-secondary bg-secondary/10"
-                    : "border-border bg-card hover:border-secondary/30"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
-                      isSelected
-                        ? "border-secondary bg-secondary text-secondary-foreground"
-                        : "border-muted-foreground"
-                    }`}
-                  >
-                    {isSelected && <Check className="h-3 w-3" />}
+      {showAdditions && (
+        <div>
+          <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Adiciones <span className="text-secondary">(+$6.000 c/u)</span>
+          </p>
+          <div className="space-y-2">
+            {ADDITIONS_LIST.map((addition) => {
+              const isSelected = unit.additions.some(a => a.name === addition)
+              return (
+                <button
+                  type="button"
+                  key={addition}
+                  onClick={() => onAdditionToggle(index, addition, !isSelected)}
+                  className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2.5 transition-colors ${
+                    isSelected
+                      ? "border-secondary bg-secondary/10"
+                      : "border-border bg-card hover:border-secondary/30"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
+                        isSelected
+                          ? "border-secondary bg-secondary text-secondary-foreground"
+                          : "border-muted-foreground"
+                      }`}
+                    >
+                      {isSelected && <Check className="h-3 w-3" />}
+                    </div>
+                    <span className="text-sm text-foreground">{addition}</span>
                   </div>
-                  <span className="text-sm text-foreground">{addition}</span>
-                </div>
-                <span className="text-xs font-semibold text-secondary">+$6.000</span>
-              </button>
-            )
-          })}
+                  <span className="text-xs font-semibold text-secondary">+$6.000</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 })
@@ -358,6 +362,9 @@ export function ProductModal() {
   const priceNum = parsePrice(selectedProduct.price)
   const selections = requiresSelections(selectedProduct.name)
   
+  // Determine if additions should be shown (not for bebidas)
+  const showAdditions = selectedProduct.category !== "bebidas"
+  
   // Calculate total with additions
   const totalAdditions = units.reduce((sum, unit) => {
     return sum + unit.additions.reduce((s, a) => s + a.price, 0)
@@ -443,6 +450,7 @@ export function ProductModal() {
               proteins={selectedProduct.proteins}
               requiresVegetable={selections.vegetable}
               requiresSauce={selections.sauce}
+              showAdditions={showAdditions}
               onProteinChange={handleProteinChange}
               onIngredientToggle={handleIngredientToggle}
               onAdditionToggle={handleAdditionToggle}

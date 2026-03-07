@@ -233,6 +233,7 @@ export function FullMenu() {
       image: item.image,
       ingredients: item.ingredients,
       proteins: item.proteins,
+      category: item.category,
     }
     setSelectedProduct(product)
   }
