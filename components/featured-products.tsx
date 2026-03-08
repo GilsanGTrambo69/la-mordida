@@ -18,12 +18,12 @@ interface FeaturedProduct {
 
 const products: FeaturedProduct[] = [
   {
-    name: "Hamburguesa Clasíca + Papas",
+    name: "Hamburguesa Clasíca + Salchipapa",
     description: "Pan brioche, lechuga, 150g de carne artesanal, 100g de queso doble crema, crema, 100g de panceta, tomate, tocineta, salsas de la casa y papas.",
-    price: "$33.000",
-    image: "/images/burger-bbq.jpg",
+    price: "$25.000",
+    image: "/images/Hamburguesa-clasica-con-salchipapa.jpeg",
     badge: "Mas vendida",
-    ingredients: ["Pan brioche", "Lechuga", "150g carne artesanal", "100g queso", "Tomate", "Tocineta al barril", "Salsa de ajo de la casa", "Papas"],
+    ingredients: ["Pan brioche", "Lechuga", "150g carne artesanal", "100g queso", "Tomate", "Tocineta al barril", "Salsa de ajo de la casa", "Salchipapa"],
     proteins: [],
     category: "hamburguesas",
   },

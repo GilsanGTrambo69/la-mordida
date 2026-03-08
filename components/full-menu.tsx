@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Star, ShoppingCart } from "lucide-react"
 import { useCart, type ProductForModal } from "@/components/cart-context"
 
-type Category = "todos" | "hamburguesas" | "perros" | "salchipapas" | "combos" | "bebidas"
+type Category = "todos" | "hamburguesas" | "perros" | "salchipapas" | "combos" | "bebidas" | "Panceta" | "Patacon"
 
 interface MenuItem {
   name: string
@@ -24,7 +24,7 @@ const categories: { key: Category; label: string }[] = [
   { key: "salchipapas", label: "Salchipapas" },
   { key: "Panceta", label: "Panceta al barril"},
   { key: "Patacon", label: "Patacones"},
-  { key: "combos", label: "Combos" },
+  //{/* key: "combos", label: "Combos" }*/},
   { key: "bebidas", label: "Bebidas" },
 ]
 
@@ -78,7 +78,7 @@ const menuItems: MenuItem[] = [
     name: "Hamburguesa Clasíca + Papas",
     description: "Pan brioche, lechuga, 150g de carne artesanal, 100g de queso doble crema, crema, 100g de panceta, tomate, tocineta, salsas de la casa y papas.",
     price: "$33.000",
-    image: "/images/burger-bbq.jpg",
+    image: "/images/hamburguesa-papas.jpg",
     category: "hamburguesas",
     ingredients: ["Pan brioche", "Lechuga", "150g carne artesanal", "100g queso", "Tomate", "Tocineta al barril", "Salsa de ajo de la casa", "Papas"],
     proteins: [],
@@ -141,7 +141,7 @@ const menuItems: MenuItem[] = [
     name: "Panceta de Cerdo al barril con Yuca",
     description: "Panceta de cerdo al barril, yuca y salsa de la casa.",
     price: "$15.000",
-    image: "/images/hot-dog.jpg",
+    image: "/images/panceta-cerdo-yuca.jpg",
     category: "Panceta",
     ingredients: ["Panceta de cerdo al barril", "Yuca", "Salsa de la casa"],
     proteins: [],
@@ -150,7 +150,7 @@ const menuItems: MenuItem[] = [
     name: "Patacones con hogao",
     description: "Patacones con hogao",
     price: "$15.000",
-    image: "/images/hot-dog.jpg",
+    image: "/images/patacon-hogao.jpg",
     category: "Patacon",
     ingredients: ["Patacones", "Hogao"],
     proteins: [],
@@ -168,9 +168,9 @@ const menuItems: MenuItem[] = [
     name: "Perro personal + salchipapa",
     description: "Pan brioche, cabello de ángel, salchicha o chorizo (a elección), pico de gallo, hogao colombiano o lechuga, 230g de proteína a elección (máximo 2 proteínas), salsa a elección, 150g de queso fundido.",
     price: "$23.000",
-    image: "/images/hot-dog.jpg",
+    image: "/images/perro-salchipapa.jpg",
     category: "perros",
-    ingredients: ["Pan brioche", "Cabello de angel", "Salchicha", "Papa"] ,
+    ingredients: ["Pan brioche", "Cabello de angel", "Salchicha", "Salchipapa"] ,
     proteins: ["Chorizo", "Salchicha"],
   },
   {
