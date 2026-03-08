@@ -175,12 +175,13 @@ export function Promotions() {
               Combo Bestia
             </h3>
             <p className="mb-3 text-sm text-muted-foreground leading-relaxed">
-              Bestia Triple + Papas Grandes + Gaseosa + Postre. Ahorra $12.000 con este combo.
+              perro caliente personal + salchipapas por 23.000. El combo perfecto para calmar tu antojo sin vaciar tu bolsillo. ¡Sabor brutal a un precio imbatible!
             </p>
             <div className="flex items-center gap-3">
+              {/*
               <span className="text-sm text-muted-foreground line-through">
                 $50.900
-              </span>
+              </span> */}
               <span className="text-2xl font-bold text-secondary">
                 $38.900
               </span>

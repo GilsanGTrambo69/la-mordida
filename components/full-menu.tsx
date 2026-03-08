@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Star, ShoppingCart } from "lucide-react"
 import { useCart, type ProductForModal } from "@/components/cart-context"
 
-type Category = "todos" | "hamburguesas" | "perros" | "salchipapas" | "combos" | "bebidas" | "Panceta" | "Patacon"
+type Category = "todos" | "hamburguesas" | "perros" | "salchipapas" | "combos" | "bebidas" | "Panceta" | "Patacon" | "Combos"
 
 interface MenuItem {
   name: string
@@ -24,7 +24,7 @@ const categories: { key: Category; label: string }[] = [
   { key: "salchipapas", label: "Salchipapas" },
   { key: "Panceta", label: "Panceta al barril"},
   { key: "Patacon", label: "Patacones"},
-  //{/* key: "combos", label: "Combos" }*/},
+  {key: "combos", label: "Combos"},
   { key: "bebidas", label: "Bebidas" },
 ]
 
@@ -70,7 +70,7 @@ const menuItems: MenuItem[] = [
     description: "Pan brioche, lechuga, 150g de carne artesanal, 100g de queso cheddar, crema, 100g de panceta, tomate, tocineta, salsas de la casa y salchipapas.",
     price: "$33.000",
     image: "/images/Hamburguesa-smash-con-panceta.jpeg",
-    category: "hamburguesas",
+    category: "combos",
     ingredients: ["Pan brioche", "Lechuga", "150g carne artesanal", "queso doble crema", "queso chedar", "100g panceta", "Tomate", "Tocineta al barril", "Salsa de ajo de la casa", "Salchipapa personal"],
     proteins: [],
   },
@@ -88,7 +88,7 @@ const menuItems: MenuItem[] = [
     description: "Pan brioche, lechuga, 150g de carne artesanal, 100g de queso cheddar, crema, 100g de panceta, tomate, tocineta, salsas de la casa y salchipapas.",
     price: "$33.000",
     image: "/images/burger-bbq.jpg",
-    category: "hamburguesas",
+    category: "combos",
     ingredients: ["Pan brioche", "Lechuga", "150g carne artesanal", "queso doble crema", "queso chedar", "100g panceta", "Tomate", "Tocineta al barril", "Salsa de ajo de la casa", "Papas"],
     proteins: [],
   },
@@ -169,7 +169,7 @@ const menuItems: MenuItem[] = [
     description: "Pan brioche, cabello de ángel, salchicha o chorizo (a elección), pico de gallo, hogao colombiano o lechuga, 230g de proteína a elección (máximo 2 proteínas), salsa a elección, 150g de queso fundido.",
     price: "$23.000",
     image: "/images/perro-salchipapa.jpg",
-    category: "perros",
+    category: "combos",
     ingredients: ["Pan brioche", "Cabello de angel", "Salchicha", "Salchipapa"] ,
     proteins: ["Chorizo", "Salchicha"],
   },
