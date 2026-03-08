@@ -17,14 +17,15 @@ const posts = [
     comments: "45",
     alt: "Tropical Mordida burger La Mordida Fusa",
   },
+  
   {
-    image: "/images/salchicosteña-personal.jpeg",
+    image: "/images/Hamburguesa-sweet-bite.jpeg",
     likes: "267",
     comments: "19",
     alt: "Salchicosteña La Mordida Fusa",
   },
   {
-    image: "/images/salchipapa-clasica-duo.jpeg",
+    image: "/images/patacon-hogao.jpg",
     likes: "521",
     comments: "63",
     alt: "La Bestia Triple La Mordida Fusa",
