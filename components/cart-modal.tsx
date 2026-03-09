@@ -32,8 +32,8 @@ function buildWhatsAppMessage(
     if (item.selectedVegetable) {
       msg += `Vegetal: ${item.selectedVegetable}\n`
     }
-    if (item.selectedSauce) {
-      msg += `Salsa: ${item.selectedSauce}\n`
+    if (item.selectedSauces && item.selectedSauces.length > 0) {
+      msg += `Salsas: ${item.selectedSauces.join(", ")}\n`
     }
     if (item.additions && item.additions.length > 0) {
       msg += `Adiciones: ${item.additions.map(a => a.name).join(", ")}\n`
@@ -128,9 +128,9 @@ export function CartModal() {
                         </p>
                       )}
 
-                      {item.selectedSauce && (
+                      {item.selectedSauces && item.selectedSauces.length > 0 && (
                         <p className="text-xs text-muted-foreground">
-                          Salsa: <span className="text-foreground">{item.selectedSauce}</span>
+                          Salsas: <span className="text-foreground">{item.selectedSauces.join(", ")}</span>
                         </p>
                       )}
 
