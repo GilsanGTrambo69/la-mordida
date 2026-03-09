@@ -19,10 +19,10 @@ interface MenuItem {
 
 const categories: { key: Category; label: string }[] = [
   { key: "todos", label: "Todos" },
+  { key: "entradas", label: "Entradas" },
   { key: "hamburguesas", label: "Hamburguesas" },
   { key: "perros", label: "Perros Calientes" },
   { key: "salchipapas", label: "Salchipapas" },
-  { key: "entradas", label: "Entradas" },
   { key: "combos", label: "Combos" },
   { key: "bebidas", label: "Bebidas" },
 ]
