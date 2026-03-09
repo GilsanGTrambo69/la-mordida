@@ -35,40 +35,39 @@ const PERRO_ADDITIONS_LIST = [
   "Papas",
 ]
 
-const VEGETABLE_OPTIONS = [
+// Vegetales base
+const BASE_VEGETABLE_OPTIONS = [
   "Pico de gallo",
   "Hogao colombiano",
   "Lechuga",
 ]
 
-// Salsas base
-const BASE_SAUCE_OPTIONS = [
-  "Salsa de tomate",
-  "Salsa BBQ",
-  "Salsa de ajo",
-  "Mostaza",
-]
-
-// Salsas con chimichurri (para salchipapa clásica, papas chip, perro personal y perro+salchipapa)
-const SAUCE_OPTIONS_WITH_CHIMICHURRI = [
-  "Salsa de tomate",
-  "Salsa BBQ",
-  "Salsa de ajo",
-  "Mostaza",
+// Vegetales con chimichurri (para salchipapa clásica, papas chip, perros)
+const VEGETABLE_OPTIONS_WITH_CHIMICHURRI = [
+  "Pico de gallo",
+  "Hogao colombiano",
+  "Lechuga",
   "Chimichurri",
 ]
 
-// Función para determinar qué salsas mostrar según el producto
-function getSauceOptionsForProduct(productName: string): string[] {
+// Función para determinar qué vegetales mostrar según el producto
+function getVegetableOptionsForProduct(productName: string): string[] {
   const nameLower = productName.toLowerCase()
   const needsChimichurri = 
     nameLower.includes("salchipapa clasica") || 
     nameLower.includes("papa chip") ||
-    nameLower.includes("perro personal") ||
-    nameLower.includes("perro") // Todos los perros incluyen chimichurri
+    nameLower.includes("perro")
   
-  return needsChimichurri ? SAUCE_OPTIONS_WITH_CHIMICHURRI : BASE_SAUCE_OPTIONS
+  return needsChimichurri ? VEGETABLE_OPTIONS_WITH_CHIMICHURRI : BASE_VEGETABLE_OPTIONS
 }
+
+// Salsas (sin chimichurri - ahora está en vegetales)
+const SAUCE_OPTIONS = [
+  "Salsa de tomate",
+  "Salsa BBQ",
+  "Salsa de ajo",
+  "Mostaza",
+]
 
 // Función para determinar si es un producto tipo perro (para adicionales)
 function isPerroProduct(productName: string): boolean {
@@ -110,7 +109,7 @@ interface UnitConfiguratorProps {
   requiresVegetable: boolean
   requiresSauce: boolean
   showAdditions: boolean
-  sauceOptions: string[]
+  vegetableOptions: string[]
   additionsList: string[]
   allowMultipleProteins: boolean
   maxProteins: number
@@ -130,7 +129,7 @@ const UnitConfigurator = memo(function UnitConfigurator({
   requiresVegetable,
   requiresSauce,
   showAdditions,
-  sauceOptions,
+  vegetableOptions,
   additionsList,
   allowMultipleProteins,
   maxProteins,
@@ -222,7 +221,7 @@ const UnitConfigurator = memo(function UnitConfigurator({
             onValueChange={(val) => onVegetableChange(index, val)}
             className="gap-2"
           >
-            {VEGETABLE_OPTIONS.map((veg) => (
+            {vegetableOptions.map((veg) => (
               <label
                 key={veg}
                 className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
@@ -246,7 +245,7 @@ const UnitConfigurator = memo(function UnitConfigurator({
             Salsas <span className="text-muted-foreground">(selecciona una o varias)</span> <span className="text-destructive">*</span>
           </p>
           <div className="space-y-2">
-            {sauceOptions.map((sauce) => {
+            {SAUCE_OPTIONS.map((sauce) => {
               const isSelected = unit.selectedSauces?.includes(sauce) || false
               return (
                 <label
@@ -490,7 +489,7 @@ const handleProteinChange = useCallback((index: number, protein: string) => {
   const totalPrice = (priceNum * quantity) + totalAdditions
 
 // Get sauce options and additions list for this product
-  const sauceOptions = getSauceOptionsForProduct(selectedProduct.name)
+  const vegetableOptions = getVegetableOptionsForProduct(selectedProduct.name)
   const additionsList = isPerroProduct(selectedProduct.name) ? PERRO_ADDITIONS_LIST : ADDITIONS_LIST
   const allowMultipleProteins = allowsMultipleProteins(selectedProduct.name)
   const maxProteins = 2
@@ -577,7 +576,7 @@ const handleProteinChange = useCallback((index: number, protein: string) => {
               requiresVegetable={selections.vegetable}
               requiresSauce={selections.sauce}
               showAdditions={showAdditions}
-              sauceOptions={sauceOptions}
+              vegetableOptions={vegetableOptions}
               additionsList={additionsList}
               allowMultipleProteins={allowMultipleProteins}
               maxProteins={maxProteins}
