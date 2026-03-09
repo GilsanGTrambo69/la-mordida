@@ -26,14 +26,16 @@ function buildWhatsAppMessage(
 
   for (const item of items) {
     msg += `${item.quantity}x ${item.name}\n`
-    if (item.protein) {
+    if (item.proteins && item.proteins.length > 0) {
+      msg += `Proteinas: ${item.proteins.join(", ")}\n`
+    } else if (item.protein) {
       msg += `Proteina: ${item.protein}\n`
     }
     if (item.selectedVegetable) {
       msg += `Vegetal: ${item.selectedVegetable}\n`
     }
-    if (item.selectedSauce) {
-      msg += `Salsa: ${item.selectedSauce}\n`
+    if (item.selectedSauces && item.selectedSauces.length > 0) {
+      msg += `Salsas: ${item.selectedSauces.join(", ")}\n`
     }
     if (item.additions && item.additions.length > 0) {
       msg += `Adiciones: ${item.additions.map(a => a.name).join(", ")}\n`
@@ -116,7 +118,11 @@ export function CartModal() {
                         </button>
                       </div>
 
-                      {item.protein && (
+                      {item.proteins && item.proteins.length > 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                          Proteinas: <span className="text-foreground">{item.proteins.join(", ")}</span>
+                        </p>
+                      ) : item.protein && (
                         <p className="text-xs text-muted-foreground">
                           Proteina: <span className="text-foreground">{item.protein}</span>
                         </p>
@@ -128,9 +134,9 @@ export function CartModal() {
                         </p>
                       )}
 
-                      {item.selectedSauce && (
+                      {item.selectedSauces && item.selectedSauces.length > 0 && (
                         <p className="text-xs text-muted-foreground">
-                          Salsa: <span className="text-foreground">{item.selectedSauce}</span>
+                          Salsas: <span className="text-foreground">{item.selectedSauces.join(", ")}</span>
                         </p>
                       )}
 

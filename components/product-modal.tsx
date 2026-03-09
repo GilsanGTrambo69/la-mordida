@@ -25,33 +25,78 @@ const ADDITIONS_LIST = [
   "Costilla ahumada",
 ]
 
+// Adicionales específicos para perros (incluye papas)
+const PERRO_ADDITIONS_LIST = [
+  "Carne desmechada",
+  "Panceta al barril",
+  "Pollo desmechado",
+  "Cerdo desmechado",
+  "Costilla ahumada",
+  "Papas",
+]
+
 const VEGETABLE_OPTIONS = [
   "Pico de gallo",
   "Hogao colombiano",
   "Lechuga",
 ]
 
-const SAUCE_OPTIONS = [
-  "Salsa rosada",
+// Salsas base
+const BASE_SAUCE_OPTIONS = [
+  "Salsa de tomate",
   "Salsa BBQ",
   "Salsa de ajo",
-  "Mayonesa",
+  "Mostaza",
 ]
 
-// Products that require vegetable and sauce selection
-const PRODUCTS_WITH_SELECTIONS = [
-  "Salchipapa",
-  "Perro",
+// Salsas con chimichurri (para salchipapa clásica, papas chip, perro personal y perro+salchipapa)
+const SAUCE_OPTIONS_WITH_CHIMICHURRI = [
+  "Salsa de tomate",
+  "Salsa BBQ",
+  "Salsa de ajo",
+  "Mostaza",
+  "Chimichurri",
 ]
+
+// Función para determinar qué salsas mostrar según el producto
+function getSauceOptionsForProduct(productName: string): string[] {
+  const nameLower = productName.toLowerCase()
+  const needsChimichurri = 
+    nameLower.includes("salchipapa clasica") || 
+    nameLower.includes("papa chip") ||
+    nameLower.includes("perro personal") ||
+    nameLower.includes("perro") // Todos los perros incluyen chimichurri
+  
+  return needsChimichurri ? SAUCE_OPTIONS_WITH_CHIMICHURRI : BASE_SAUCE_OPTIONS
+}
+
+// Función para determinar si es un producto tipo perro (para adicionales)
+function isPerroProduct(productName: string): boolean {
+  return productName.toLowerCase().includes("perro")
+}
+
+// Función para determinar si el producto permite múltiples proteínas (máximo 2)
+function allowsMultipleProteins(productName: string): boolean {
+  const nameLower = productName.toLowerCase()
+  return nameLower.includes("salchipapa clasica")
+}
 
 function requiresSelections(productName: string): { vegetable: boolean; sauce: boolean } {
   const nameLower = productName.toLowerCase()
   const isPerro = nameLower.includes("perro")
-  const isSalchipapa = nameLower.includes("salchipapa") || nameLower.includes("salchicosteña") || nameLower.includes("papa chip")
+  // Salchicosteña NO tiene opción de vegetales
+  const isSalchicosteña = nameLower.includes("salchicosteña")
+  // Hamburguesas NO tienen opción de vegetales ni salsas
+  const isHamburguesa = nameLower.includes("hamburguesa") || nameLower.includes("smash")
+  const isSalchipapa = nameLower.includes("salchipapa") || nameLower.includes("papa chip")
+  // Entradas (Panceta, Patacones) NO tienen opciones
+  const isEntrada = nameLower.includes("panceta") || nameLower.includes("patacones")
   
   return {
-    vegetable: isPerro || isSalchipapa,
-    sauce: isPerro,
+    // Vegetales solo para perros y salchipapas (excepto salchicosteña, hamburguesas y entradas)
+    vegetable: (isPerro || isSalchipapa) && !isSalchicosteña && !isHamburguesa && !isEntrada,
+    // Salsas para perros y salchipapas (excepto hamburguesas y entradas)
+    sauce: (isPerro || isSalchipapa) && !isHamburguesa && !isEntrada,
   }
 }
 
@@ -65,11 +110,16 @@ interface UnitConfiguratorProps {
   requiresVegetable: boolean
   requiresSauce: boolean
   showAdditions: boolean
+  sauceOptions: string[]
+  additionsList: string[]
+  allowMultipleProteins: boolean
+  maxProteins: number
   onProteinChange: (index: number, protein: string) => void
+  onProteinToggle: (index: number, protein: string, checked: boolean) => void
   onIngredientToggle: (index: number, ingredient: string, checked: boolean) => void
   onAdditionToggle: (index: number, additionName: string, checked: boolean) => void
   onVegetableChange: (index: number, vegetable: string) => void
-  onSauceChange: (index: number, sauce: string) => void
+  onSauceToggle: (index: number, sauce: string, checked: boolean) => void
 }
 
 const UnitConfigurator = memo(function UnitConfigurator({
@@ -80,11 +130,16 @@ const UnitConfigurator = memo(function UnitConfigurator({
   requiresVegetable,
   requiresSauce,
   showAdditions,
+  sauceOptions,
+  additionsList,
+  allowMultipleProteins,
+  maxProteins,
   onProteinChange,
+  onProteinToggle,
   onIngredientToggle,
   onAdditionToggle,
   onVegetableChange,
-  onSauceChange,
+  onSauceToggle,
 }: UnitConfiguratorProps) {
   return (
     <div className="rounded-xl border border-border bg-background p-4">
@@ -93,7 +148,7 @@ const UnitConfigurator = memo(function UnitConfigurator({
       </h4>
 
       {/* Proteina */}
-      {proteins.length > 0 && (
+      {proteins.length > 0 && !allowMultipleProteins && (
         <div className="mb-4">
           <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Proteina <span className="text-destructive">*</span>
@@ -117,6 +172,42 @@ const UnitConfigurator = memo(function UnitConfigurator({
               </label>
             ))}
           </RadioGroup>
+        </div>
+      )}
+
+      {/* Proteinas múltiples (máximo 2) */}
+      {proteins.length > 0 && allowMultipleProteins && (
+        <div className="mb-4">
+          <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Proteinas <span className="text-muted-foreground">(máximo {maxProteins})</span> <span className="text-destructive">*</span>
+          </p>
+          <div className="space-y-2">
+            {proteins.map((protein) => {
+              const isSelected = unit.proteins?.includes(protein) || false
+              const isDisabled = !isSelected && (unit.proteins?.length || 0) >= maxProteins
+              return (
+                <label
+                  key={protein}
+                  className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                    isSelected
+                      ? "border-primary bg-primary/10"
+                      : isDisabled
+                        ? "border-border bg-muted/50 opacity-50 cursor-not-allowed"
+                        : "border-border bg-card hover:border-primary/30"
+                  }`}
+                >
+                  <Checkbox
+                    checked={isSelected}
+                    disabled={isDisabled}
+                    onCheckedChange={(checked) =>
+                      onProteinToggle(index, protein, !!checked)
+                    }
+                  />
+                  <span className={`text-sm ${isDisabled ? "text-muted-foreground" : "text-foreground"}`}>{protein}</span>
+                </label>
+              )
+            })}
+          </div>
         </div>
       )}
 
@@ -148,31 +239,35 @@ const UnitConfigurator = memo(function UnitConfigurator({
         </div>
       )}
 
-      {/* Sauce Selection */}
+      {/* Sauce Selection - Multiple options */}
       {requiresSauce && (
         <div className="mb-4">
           <p className="mb-2 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Salsa <span className="text-destructive">*</span>
+            Salsas <span className="text-muted-foreground">(selecciona una o varias)</span> <span className="text-destructive">*</span>
           </p>
-          <RadioGroup
-            value={unit.selectedSauce || ""}
-            onValueChange={(val) => onSauceChange(index, val)}
-            className="gap-2"
-          >
-            {SAUCE_OPTIONS.map((sauce) => (
-              <label
-                key={sauce}
-                className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
-                  unit.selectedSauce === sauce
-                    ? "border-primary bg-primary/10"
-                    : "border-border bg-card hover:border-primary/30"
-                }`}
-              >
-                <RadioGroupItem value={sauce} />
-                <span className="text-sm text-foreground">{sauce}</span>
-              </label>
-            ))}
-          </RadioGroup>
+          <div className="space-y-2">
+            {sauceOptions.map((sauce) => {
+              const isSelected = unit.selectedSauces?.includes(sauce) || false
+              return (
+                <label
+                  key={sauce}
+                  className={`flex cursor-pointer items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                    isSelected
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card hover:border-primary/30"
+                  }`}
+                >
+                  <Checkbox
+                    checked={isSelected}
+                    onCheckedChange={(checked) =>
+                      onSauceToggle(index, sauce, !!checked)
+                    }
+                  />
+                  <span className="text-sm text-foreground">{sauce}</span>
+                </label>
+              )
+            })}
+          </div>
         </div>
       )}
 
@@ -223,7 +318,7 @@ const UnitConfigurator = memo(function UnitConfigurator({
             Adiciones <span className="text-secondary">(+$6.000 c/u)</span>
           </p>
           <div className="space-y-2">
-            {ADDITIONS_LIST.map((addition) => {
+            {additionsList.map((addition) => {
               const isSelected = unit.additions.some(a => a.name === addition)
               return (
                 <button
@@ -261,14 +356,15 @@ const UnitConfigurator = memo(function UnitConfigurator({
 
 // ---------- ProductModal ----------
 
-function createUnit(protein: string): ProductUnit {
+function createUnit(protein: string, allowMultiple: boolean = false): ProductUnit {
   return {
     id: Math.random().toString(36).slice(2, 9),
-    protein,
+    protein: allowMultiple ? "" : protein,
+    proteins: allowMultiple ? [] : undefined,
     removedIngredients: [],
     additions: [],
     selectedVegetable: undefined,
-    selectedSauce: undefined,
+    selectedSauces: [],
   }
 }
 
@@ -277,16 +373,17 @@ export function ProductModal() {
   const [units, setUnits] = useState<ProductUnit[]>([])
   const [quantity, setQuantity] = useState(1)
 
-  // Reset al abrir un producto nuevo
+// Reset al abrir un producto nuevo
   useEffect(() => {
     if (selectedProduct) {
+      const allowMultiple = allowsMultipleProteins(selectedProduct.name)
       const defaultProtein = selectedProduct.proteins[0] || ""
-      setUnits([createUnit(defaultProtein)])
+      setUnits([createUnit(defaultProtein, allowMultiple)])
       setQuantity(1)
     }
   }, [selectedProduct])
 
-  // Sincronizar unidades cuando cambia la cantidad
+// Sincronizar unidades cuando cambia la cantidad
   const handleQuantityChange = useCallback(
     (newQty: number) => {
       if (newQty < 1) return
@@ -294,9 +391,10 @@ export function ProductModal() {
 
       setUnits((prev) => {
         if (newQty > prev.length) {
+          const allowMultiple = selectedProduct ? allowsMultipleProteins(selectedProduct.name) : false
           const defaultProtein = selectedProduct?.proteins[0] || ""
           const toAdd = Array.from({ length: newQty - prev.length }, () =>
-            createUnit(defaultProtein)
+            createUnit(defaultProtein, allowMultiple)
           )
           return [...prev, ...toAdd]
         }
@@ -309,9 +407,22 @@ export function ProductModal() {
     [selectedProduct]
   )
 
-  const handleProteinChange = useCallback((index: number, protein: string) => {
+const handleProteinChange = useCallback((index: number, protein: string) => {
     setUnits((prev) =>
       prev.map((u, i) => (i === index ? { ...u, protein } : u))
+    )
+  }, [])
+
+  const handleProteinToggle = useCallback((index: number, protein: string, checked: boolean) => {
+    setUnits((prev) =>
+      prev.map((u, i) => {
+        if (i !== index) return u
+        const currentProteins = u.proteins || []
+        const newProteins = checked
+          ? [...currentProteins, protein]
+          : currentProteins.filter((p) => p !== protein)
+        return { ...u, proteins: newProteins }
+      })
     )
   }, [])
 
@@ -351,9 +462,16 @@ export function ProductModal() {
     )
   }, [])
 
-  const handleSauceChange = useCallback((index: number, sauce: string) => {
+  const handleSauceToggle = useCallback((index: number, sauce: string, checked: boolean) => {
     setUnits((prev) =>
-      prev.map((u, i) => (i === index ? { ...u, selectedSauce: sauce } : u))
+      prev.map((u, i) => {
+        if (i !== index) return u
+        const currentSauces = u.selectedSauces || []
+        const newSauces = checked
+          ? [...currentSauces, sauce]
+          : currentSauces.filter((s) => s !== sauce)
+        return { ...u, selectedSauces: newSauces }
+      })
     )
   }, [])
 
@@ -362,8 +480,8 @@ export function ProductModal() {
   const priceNum = parsePrice(selectedProduct.price)
   const selections = requiresSelections(selectedProduct.name)
   
-  // Determine if additions should be shown (not for bebidas)
-  const showAdditions = selectedProduct.category !== "bebidas"
+  // Determine if additions should be shown (not for bebidas or entradas)
+  const showAdditions = selectedProduct.category !== "bebidas" && selectedProduct.category !== "entradas"
   
   // Calculate total with additions
   const totalAdditions = units.reduce((sum, unit) => {
@@ -371,11 +489,19 @@ export function ProductModal() {
   }, 0)
   const totalPrice = (priceNum * quantity) + totalAdditions
 
+// Get sauce options and additions list for this product
+  const sauceOptions = getSauceOptionsForProduct(selectedProduct.name)
+  const additionsList = isPerroProduct(selectedProduct.name) ? PERRO_ADDITIONS_LIST : ADDITIONS_LIST
+  const allowMultipleProteins = allowsMultipleProteins(selectedProduct.name)
+  const maxProteins = 2
+
   // Validation
   const isValid = units.every((unit) => {
-    const hasProtein = selectedProduct.proteins.length === 0 || unit.protein
+    // Para productos con múltiples proteínas, verificar que tenga al menos 1
+    const hasProtein = selectedProduct.proteins.length === 0 || 
+      (allowMultipleProteins ? (unit.proteins && unit.proteins.length >= 1) : unit.protein)
     const hasVegetable = !selections.vegetable || unit.selectedVegetable
-    const hasSauce = !selections.sauce || unit.selectedSauce
+    const hasSauce = !selections.sauce || (unit.selectedSauces && unit.selectedSauces.length > 0)
     return hasProtein && hasVegetable && hasSauce
   })
 
@@ -441,7 +567,7 @@ export function ProductModal() {
 
         {/* Configuradores por unidad */}
         <div className="space-y-3">
-          {units.map((unit, index) => (
+{units.map((unit, index) => (
             <UnitConfigurator
               key={unit.id}
               index={index}
@@ -451,11 +577,16 @@ export function ProductModal() {
               requiresVegetable={selections.vegetable}
               requiresSauce={selections.sauce}
               showAdditions={showAdditions}
+              sauceOptions={sauceOptions}
+              additionsList={additionsList}
+              allowMultipleProteins={allowMultipleProteins}
+              maxProteins={maxProteins}
               onProteinChange={handleProteinChange}
+              onProteinToggle={handleProteinToggle}
               onIngredientToggle={handleIngredientToggle}
               onAdditionToggle={handleAdditionToggle}
               onVegetableChange={handleVegetableChange}
-              onSauceChange={handleSauceChange}
+              onSauceToggle={handleSauceToggle}
             />
           ))}
         </div>
