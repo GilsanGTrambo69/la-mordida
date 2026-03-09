@@ -18,6 +18,7 @@ export interface CartItem {
   image: string
   price: number
   protein: string
+  proteins?: string[]  // Para productos que permiten múltiples proteínas
   removedIngredients: string[]
   additions: Addition[]
   selectedVegetable?: string
@@ -28,6 +29,7 @@ export interface CartItem {
 export interface ProductUnit {
   id: string
   protein: string
+  proteins?: string[]  // Para productos que permiten múltiples proteínas
   removedIngredients: string[]
   additions: Addition[]
   selectedVegetable?: string
@@ -68,7 +70,8 @@ function unitConfigKey(unit: ProductUnit): string {
   const sortedRemoved = [...unit.removedIngredients].sort().join(",")
   const sortedAdditions = [...unit.additions].map(a => a.name).sort().join(",")
   const sortedSauces = [...(unit.selectedSauces || [])].sort().join(",")
-  return `${unit.protein}|${sortedRemoved}|${sortedAdditions}|${unit.selectedVegetable || ""}|${sortedSauces}`
+  const sortedProteins = [...(unit.proteins || [])].sort().join(",")
+  return `${unit.protein}|${sortedProteins}|${sortedRemoved}|${sortedAdditions}|${unit.selectedVegetable || ""}|${sortedSauces}`
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -82,7 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addConfiguredUnits = useCallback(
     (units: ProductUnit[], baseProduct: { name: string; image: string; price: number }) => {
-      const grouped = new Map<string, { protein: string; removedIngredients: string[]; additions: Addition[]; selectedVegetable?: string; selectedSauces?: string[]; count: number }>()
+      const grouped = new Map<string, { protein: string; proteins?: string[]; removedIngredients: string[]; additions: Addition[]; selectedVegetable?: string; selectedSauces?: string[]; count: number }>()
 
       for (const unit of units) {
         const key = unitConfigKey(unit)
@@ -92,6 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         } else {
           grouped.set(key, {
             protein: unit.protein,
+            proteins: unit.proteins ? [...unit.proteins] : undefined,
             removedIngredients: [...unit.removedIngredients],
             additions: [...unit.additions],
             selectedVegetable: unit.selectedVegetable,
@@ -110,6 +114,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           image: baseProduct.image,
           price: baseProduct.price + additionsTotal,
           protein: group.protein,
+          proteins: group.proteins,
           removedIngredients: group.removedIngredients,
           additions: group.additions,
           selectedVegetable: group.selectedVegetable,

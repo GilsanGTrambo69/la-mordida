@@ -26,7 +26,9 @@ function buildWhatsAppMessage(
 
   for (const item of items) {
     msg += `${item.quantity}x ${item.name}\n`
-    if (item.protein) {
+    if (item.proteins && item.proteins.length > 0) {
+      msg += `Proteinas: ${item.proteins.join(", ")}\n`
+    } else if (item.protein) {
       msg += `Proteina: ${item.protein}\n`
     }
     if (item.selectedVegetable) {
@@ -116,7 +118,11 @@ export function CartModal() {
                         </button>
                       </div>
 
-                      {item.protein && (
+                      {item.proteins && item.proteins.length > 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                          Proteinas: <span className="text-foreground">{item.proteins.join(", ")}</span>
+                        </p>
+                      ) : item.protein && (
                         <p className="text-xs text-muted-foreground">
                           Proteina: <span className="text-foreground">{item.protein}</span>
                         </p>
